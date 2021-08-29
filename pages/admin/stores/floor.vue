@@ -15,7 +15,7 @@
             </div>
             <div class="mb-5">
               <p class="text-subtitle-1 font-weight-bold">天気情報</p>
-              <v-card>
+              <v-card max-width="500">
                 <v-card-title>{{ city.name }}</v-card-title>
                 <v-card-subtitle>{{ currentDate }}</v-card-subtitle>
                 <v-card-text>
@@ -26,6 +26,30 @@
                     <li>最低気温：{{ city.tempMin }}℃</li>
                   </ul>
                 </v-card-text>
+                <v-divider></v-divider>
+                <v-virtual-scroll
+                  v-for="item in items"
+                  :key="item"
+                  :item-height="50"
+                  height="300"
+                >
+                  <v-list-item>
+                    <v-list-item-text>
+                      {{ item.weather }}
+                    </v-list-item-text>
+                  </v-list-item>
+                  <template v-slot:default="{ item }">
+                    <v-list-item :key="item">
+                      <v-list-item-action>
+                        <v-icon>{{item.icon}}</v-icon>
+                      </v-list-item-action>
+                      <v-list-item-content>
+                        <v-list-item-title>{{item.weather}}</v-list-item-title>
+                        <v-list-item-text>{{item.temp}}</v-list-item-text>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </template>
+                </v-virtual-scroll>
               </v-card>
             </div>
             <div class="mb-5">
@@ -82,9 +106,6 @@ export default {
         tempMin: res.main.temp_min,
         main: res.weather[0].main,
         icon: res.weather[0].icon
-      },
-      everyDay: {
-
       }
     }
   },
@@ -108,6 +129,11 @@ export default {
         minutes: '',
         time: '',
         timeText: '',
+      },
+      items: {
+        icon: ['mdi-cloud', 'mdi-cloud', 'mdi-cloud' ,'mdi-cloud', 'mdi-cloud'],
+        weather: ['曇り', '晴れ', '曇り', '晴れ', '曇り'],
+        temp: [26, 30, 40, 30, 20]
       },
       vegetables: [
         {
@@ -136,9 +162,6 @@ export default {
     currentDate() {
       return this.getCurrentDate(this.city.date)
     },
-    // tomorrowDate() {
-    //   return this.getWeatherEveryDay( ,0)
-    // }
   },
   created() {
   },
