@@ -8,15 +8,20 @@
             <div class="mb-5">
               <p class="text-subtitle-1 font-weight-bold">最新の売り場状況</p>
               <v-img
-                max-height="300"
-                max-width="500"
-                src="/yasai_img.jpg"
-              />
+                :src="AWSRes.url"
+              >
+              </v-img>
             </div>
 
             <div class="mb-5">
               <p class="text-subtitle-1 font-weight-bold">野菜の量</p>
-              <v-simple-table>
+              <v-card>
+                <v-card-text>{{ storeStatus.latestTime }}</v-card-text>
+                <v-card-text>{{ storeStatus.manyVegetable }}</v-card-text>
+                <v-card-text>{{ storeStatus.wellVegetable }}</v-card-text>
+              </v-card>
+
+              <!-- <v-simple-table>
                 <template #default>
                   <thead>
                     <tr>
@@ -38,12 +43,12 @@
                     </tr>
                   </tbody>
                 </template>
-              </v-simple-table>
+              </v-simple-table> -->
             </div>
 
             <div class="mb-5">
               <p class="text-subtitle-1 font-weight-bold">天気情報</p>
-              <v-card max-width="500">
+              <v-card>
                 <!-- 取得都市,現在時刻,現在の天気 -->
                 <v-list-item two-line>
                   <v-list-item-content>
@@ -83,6 +88,7 @@
                       <v-list-item-subtitle class="text-right">
                         {{ item.temp }}
                       </v-list-item-subtitle>
+                      <v-divider></v-divider>
                     </v-list-item>
                   </v-list>
               </v-card>
@@ -103,35 +109,31 @@ export default {
     BasePage
   },
   async asyncData({ $axios }) {
+    // 前ページでとってきたAPIをsessionStrageかlocalStrageに保存
     const defaultCity = 'Tokyo'
-    const API_KEY = '3f81b4731f11e28db726caf55956e46e'
-    const URL = `https://api.openweathermap.org/data/2.5/weather?q=${defaultCity},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${API_KEY}`;
-    const URL_THREE_HOUR = `https://api.openweathermap.org/data/2.5/forecast?q=${defaultCity},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${API_KEY}`;
-
     const AWS_ID = 'VEGEDIGI'
-    console.log(AWS_ID)
+
+    // URL、環境変数に移動する
+    const URL = `https://api.openweathermap.org/data/2.5/weather?q=${defaultCity},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`;
+    const URL_THREE_HOUR = `https://api.openweathermap.org/data/2.5/forecast?q=${defaultCity},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`;
     const URL_AWS_IMAGE = `https://vda9ujojtg.execute-api.ap-northeast-1.amazonaws.com/store/${AWS_ID}/image?date=20210815`
-    await $axios.$get(URL_AWS_IMAGE)
-    // .then((res) => {
-    //   this.drawImage(res)
-    //   console.log("res1:", res)
-    // })
-    // .catch((error) => {
-    //   (error, 'サーバー側で何らかのエラーが発生しました。')
-    // })
-    const res = await $axios.$get(URL)
-    const resThreeHour = await $axios.$get(URL_THREE_HOUR)
+
+    // promise.allにする予定
+    const todaysRes = await $axios.$get(URL)
+    const threehoursRes = await $axios.$get(URL_THREE_HOUR)
+    const AWSRes = await $axios.$get(URL_AWS_IMAGE)
     return {
       city: {
-        name: res.name,
-        date: new Date(res.dt * 1000),
-        temp: parseInt(res.main.temp + 0.5),
-        tempMax: res.main.temp_max,
-        tempMin: res.main.temp_min,
-        main: res.weather[0].main,
-        icon: res.weather[0].icon
+        name: todaysRes.name,
+        date: new Date(todaysRes.dt * 1000),
+        temp: parseInt(todaysRes.main.temp + 0.5),
+        tempMax: todaysRes.main.temp_max,
+        tempMin: todaysRes.main.temp_min,
+        main: todaysRes.weather[0].main,
+        icon: todaysRes.weather[0].icon
       },
-      resThreeHour,
+      threehoursRes,
+      AWSRes,
     }
   },
   data () {
@@ -155,7 +157,15 @@ export default {
         time: '',
         timeText: '',
       },
-      resThreeHour: '',
+      dummyText: '',
+      storeStatus: {
+        latestTime: '',
+        stationName: '',
+        manyVegetable: '',
+        wellVegetable: ''
+      },
+      threehoursRes: '',
+      AWSRes: '',
       forecast: [],
       vegetables: [
         {
@@ -186,20 +196,34 @@ export default {
     },
   },
   created() {
-    // console.log("resImage:", this.resImage)
-    //  for文でresThreeHourのデータをforecastに入れる
+    //  for文でthreehoursResのデータをforecastに入れる
     for(let i=0; i < 15; i++) {
-      const splitDate = this.resThreeHour.list[i].dt_txt.split(/:| |-/)
-      const weatherIcon = this.getWeatherDiscriptionToJapanese(this.resThreeHour.list[i].weather[0].main)
+      const splitDate = this.threehoursRes.list[i].dt_txt.split(/:| |-/)
+      const weatherIcon = this.getWeatherDiscriptionToJapanese(this.threehoursRes.list[i].weather[0].main)
       const regex = /09|12|15|18/g;
       if(splitDate[3].search(regex) !== -1) {
         this.forecast.push({
           day: `${splitDate[1]}/${splitDate[2]} ${splitDate[3]}:${splitDate[4]}`,
           icon: weatherIcon.icon,
-          temp: `${parseInt(this.resThreeHour.list[i].main.temp_max + 0.5)}\xB0/${parseInt(this.resThreeHour.list[i].main.temp_min + 0.5)}\xB0`
+          temp: `${parseInt(this.threehoursRes.list[i].main.temp_max + 0.5)}\xB0/${parseInt(this.threehoursRes.list[i].main.temp_min + 0.5)}\xB0`
         })
       }
     }
+  },
+  mounted() {
+    this.dummyText = "_/_/_/_/_/_/_/_/ 10:00 野菜状況 _/_/_/_/_/_/_/_/\n\n売り場状況報告です。 store_name駅 09月05日\n売場にたくさん並んでいるものは、シイタケ トマト です。\n全体的に動きは鈍いです。\n引き続きご出荷お待ちしております。\n下記のURLから売場の状況写真はこちらから見ることができます。"
+    if (this.dummyText) {
+      const dummyTextReplace = this.dummyText.replace('/\n| /g', '')
+      const dummyTextArray = dummyTextReplace.split('\n')
+      console.log("dummyTextArray", dummyTextArray)
+      this.storeStatus = {
+        latestTime: dummyTextArray[2],
+        stationName: dummyTextArray[2],
+        manyVegetable: dummyTextArray[3],
+        wellVegetable: dummyTextArray[4]
+      };
+
+    };
   },
   methods: {
     // 現在日時取得
@@ -237,9 +261,6 @@ export default {
             return disc;
       }
     },
-    drawImage(res) {
-      console.log("res:", res)
-    }
   }
 }
 </script>
