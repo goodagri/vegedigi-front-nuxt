@@ -211,11 +211,10 @@ export default {
     }
   },
   mounted() {
-    this.dummyText = "_/_/_/_/_/_/_/_/ 10:00 野菜状況 _/_/_/_/_/_/_/_/\n\n売り場状況報告です。 store_name駅 09月05日\n売場にたくさん並んでいるものは、シイタケ トマト です。\n全体的に動きは鈍いです。\n引き続きご出荷お待ちしております。\n下記のURLから売場の状況写真はこちらから見ることができます。"
+    this.dummyText = "_/_/_/_/_/_/_/_/ 10:00 野菜状況 _/_/_/_/_/_/_/_/\n\n売り場状況報告です。 東京駅 09月05日\n売場にたくさん並んでいるものは、シイタケ トマト です。\n全体的に動きは鈍いです。\n引き続きご出荷お待ちしております。\n下記のURLから売場の状況写真はこちらから見ることができます。"
     if (this.dummyText) {
       const dummyTextReplace = this.dummyText.replace('/\n| /g', '')
       const dummyTextArray = dummyTextReplace.split('\n')
-      console.log("dummyTextArray", dummyTextArray)
       this.storeStatus = {
         latestTime: dummyTextArray[2],
         stationName: dummyTextArray[2],
