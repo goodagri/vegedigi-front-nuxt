@@ -37,7 +37,7 @@
               </div> -->
               <v-card-actions>
                 <v-row justify="end">
-                  <v-btn color="success" @click="onLoginClick">ログイン</v-btn>
+                  <v-btn color="success" to="/admin/stores/floor">ログイン</v-btn>
                 </v-row>
               </v-card-actions>
             </v-form>
@@ -77,21 +77,6 @@ export default {
     }
   },
   methods: {
-    onLoginClick () {
-      this.errors = {}
-      this.$router.push('/admin/stores/floor/')
-      // this.$auth.loginWith(
-      //   'cookie',
-      //   { data: this.user }
-      // ).then(() => {
-      //   // this.$router.push('/images/')
-      //   this.$router.push('/')
-      // }).catch((err) => {
-      //   for (const d of err.response.data.detail) {
-      //     this.$set(this.errors, d.field, d.message)
-      //   }
-      // })
-    },
     switchPasswordInputType () {
       this.isPasswordHidden = !this.isPasswordHidden
     }

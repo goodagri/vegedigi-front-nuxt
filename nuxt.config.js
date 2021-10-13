@@ -1,10 +1,19 @@
 import colors from 'vuetify/es5/util/colors'
-
-require('dotenv').config();
+import { defineNuxtConfig } from '@nuxt/bridge'
+import dotenv from 'dotenv'
+dotenv.config();
 const { API_KEY } = process.env;
 
-export default {
+export default defineNuxtConfig({
+  bridge: false,
+  privateRuntimeConfig: {
+  //   apiKey: API_KEY
+  // },
+  // publicRuntimeConfig: {
+  //   apiKey: process.env.NODE_ENV !== 'production' ? API_KEY : undefined
+  // },
   // Global page headers: https://go.nuxtjs.dev/config-head
+  },
   head: {
     titleTemplate: '%s - vededigi',
     title: 'vededigi',
@@ -75,4 +84,4 @@ export default {
   env: {
     API_KEY
   }
-}
+})
