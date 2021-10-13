@@ -215,7 +215,6 @@ export default {
     if (this.dummyText) {
       const dummyTextReplace = this.dummyText.replace('/\n| /g', '')
       const dummyTextArray = dummyTextReplace.split('\n')
-      console.log("dummyTextArray", dummyTextArray)
       this.storeStatus = {
         latestTime: dummyTextArray[2],
         stationName: dummyTextArray[2],
