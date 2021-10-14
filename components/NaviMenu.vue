@@ -1,5 +1,6 @@
 <template>
 <div>
+  
   <v-navigation-drawer permanent class="light" dark>
     <v-list dense nav>
       <v-list-item
@@ -9,19 +10,6 @@
         :to="item.link"
         @click="item.action"
       >
-      <!-- <v-list-item
-        v-for="item in naviMenuitems"
-        :key="item.title"
-        link
-        @click="handleClick(item.title)"
-      > -->
-      <!-- <v-list-item
-        v-for="(item, index) in naviMenuitems"
-        :key="index"
-        :to="item.link"
-        nuxt
-        @click="item.action"
-      > -->
         <v-list-item-icon>
           <v-icon>{{ item.icon }}</v-icon>
         </v-list-item-icon>
@@ -116,8 +104,6 @@ export default {
       //   })
       // }
     }
-        // { title: '売り場状況', icon: 'mdi-image', iconright: 'mdi-chevron-right' },
-        // { title: '過去売り上げグラフ', icon: 'mdi-chart-bar', iconright: 'mdi-chevron-right'},
   },
   methods: {
     // handleClick(title) {
@@ -133,5 +119,4 @@ export default {
 </script>
 
 <style>
-
 </style>

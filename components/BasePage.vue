@@ -43,11 +43,10 @@
         </template>
       </v-breadcrumbs>
       <v-row>
-        <!-- <v-col cols="4"> -->
         <v-col class="col-xs-12 col-sm-12 col-md-4">
+          <p class="bg-black">aaaa</p>
           <NaviMenu class="navimenu-area"></NaviMenu>
         </v-col>
-        <!-- <v-col cols="8"> -->
           <v-col class="col-xs-12 col-sm-12 col-md-8">
           <slot name="main">
           </slot>

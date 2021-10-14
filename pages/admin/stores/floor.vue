@@ -7,10 +7,15 @@
           <v-col>
             <div class="mb-5">
               <p class="text-subtitle-1 font-weight-bold">最新の売り場状況</p>
-              <v-img
-                :src="AWSRes.url"
-              >
-              </v-img>
+              <v-carousel>
+                <v-carousel-item
+                  v-for="(item,i) in items"
+                  :key="i"
+                  :src="item.src"
+                  reverse-transition="fade-transition"
+                  transition="fade-transition"
+                ></v-carousel-item>
+              </v-carousel>
             </div>
 
             <div class="mb-5">
@@ -20,30 +25,6 @@
                 <v-card-text>{{ storeStatus.manyVegetable }}</v-card-text>
                 <v-card-text>{{ storeStatus.wellVegetable }}</v-card-text>
               </v-card>
-
-              <!-- <v-simple-table>
-                <template #default>
-                  <thead>
-                    <tr>
-                      <th class="text-left">
-                        野菜の種類
-                      </th>
-                      <th class="text-left">
-                        残りの数量
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="item in vegetables"
-                      :key="item.name"
-                    >
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.numbers }}</td>
-                    </tr>
-                  </tbody>
-                </template>
-              </v-simple-table> -->
             </div>
 
             <div class="mb-5">
@@ -121,7 +102,7 @@ export default {
     // promise.allにする予定
     const todaysRes = await $axios.$get(URL)
     const threehoursRes = await $axios.$get(URL_THREE_HOUR)
-    const AWSRes = await $axios.$get(URL_AWS_IMAGE)
+    const S3_IMAGE = await $axios.$get(URL_AWS_IMAGE)
     return {
       city: {
         name: todaysRes.name,
@@ -133,7 +114,13 @@ export default {
         icon: todaysRes.weather[0].icon
       },
       threehoursRes,
-      AWSRes,
+      items: [{
+        src: S3_IMAGE.url
+      },
+      {
+        src: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
+      }],
+      S3_IMAGE,
     }
   },
   data () {
@@ -165,7 +152,6 @@ export default {
         wellVegetable: ''
       },
       threehoursRes: '',
-      AWSRes: '',
       forecast: [],
       vegetables: [
         {
@@ -184,7 +170,8 @@ export default {
           name: 'トマト',
           numbers: 2,
         },
-      ]
+      ],
+      items: [],
     }
   },
   computed: {
@@ -211,7 +198,7 @@ export default {
     }
   },
   mounted() {
-    this.dummyText = "_/_/_/_/_/_/_/_/ 10:00 野菜状況 _/_/_/_/_/_/_/_/\n\n売り場状況報告です。 store_name駅 09月05日\n売場にたくさん並んでいるものは、シイタケ トマト です。\n全体的に動きは鈍いです。\n引き続きご出荷お待ちしております。\n下記のURLから売場の状況写真はこちらから見ることができます。"
+    this.dummyText = `_/_/_/_/_/_/_/_/ 10:00 野菜状況 _/_/_/_/_/_/_/_/\n\n売り場状況報告です。 東京駅 09月05日\n売場にたくさん並んでいるものは、シイタケ トマト です。\n全体的に動きは鈍いです。\n引き続きご出荷お待ちしております。\n下記のURLから売場の状況写真はこちらから見ることができます。`
     if (this.dummyText) {
       const dummyTextReplace = this.dummyText.replace('/\n| /g', '')
       const dummyTextArray = dummyTextReplace.split('\n')
