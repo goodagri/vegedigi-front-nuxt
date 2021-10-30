@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "HOST=0.0.0.0 PORT=333 nuxi dev",
+    "dev": "HOST=0.0.0.0 PORT=50000 nuxi dev",
     "build": "nuxi build",
     "start": "nuxt start",
     "generate": "nuxt generate",
