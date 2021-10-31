@@ -14,7 +14,7 @@
           <UserFormProductionItem />
           <UserFormMethod />
           <v-row class="justify-center">
-            <v-btn class="success justify-center" @click="onSubmit">この内容で会員情報を登録する</v-btn>
+            <v-btn class="success justify-center" @click="onSubmit">この内容で会員登録する</v-btn>
           </v-row>
         </v-container>
       </template>
@@ -32,7 +32,18 @@ export default {
   },
   data () {
     return {
-      breadcrumbItems: []
+      breadcrumbItems: [
+        {
+          text: '会員一覧',
+          disabled: false,
+          href: '/admin/users'
+        },
+        {
+          text: '新規会員登録',
+          disabled: true,
+          href: ''
+        }
+      ],
     }
   },
   computed: {
