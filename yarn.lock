@@ -8029,6 +8029,20 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
 
+nuxi-edge@latest:
+  version "3.0.0-27264620.a62351a"
+  resolved "https://registry.yarnpkg.com/nuxi-edge/-/nuxi-edge-3.0.0-27264620.a62351a.tgz#41398aee0655cd7997a086e96c5c211f60340833"
+  integrity sha512-A3r4mDr8VauOw8rL6Yj37masxohlFdoXLY6P3ZrJybxNqB7Ujb3zywCVNL9vfXvAABN6p4sLmgO1azd8fG+9Qw==
+  optionalDependencies:
+    fsevents "~2.3.2"
+
+nuxi@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/nuxi/-/nuxi-0.10.0.tgz#6c829b33428485511553b5b41563ba06927475ee"
+  integrity sha512-CBgvgycCur4ETTc80G4dm5eXT3pz7jv3/YfnLGNHsGrz7PiBp49OTfOz4jM+w86IEv2dMc0VbooNo3+EsgxogQ==
+  dependencies:
+    nuxi-edge latest
+
 "nuxi@npm:nuxi-edge@3.0.0-27235451.ece0e01":
   version "3.0.0-27235451.ece0e01"
   resolved "https://registry.yarnpkg.com/nuxi-edge/-/nuxi-edge-3.0.0-27235451.ece0e01.tgz#e13a85eb7fd0979b9595727dd51191a90b2851f9"

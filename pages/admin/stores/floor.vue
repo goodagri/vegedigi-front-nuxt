@@ -1,6 +1,17 @@
 <template>
   <v-app>
     <BasePage page-title="売り場状況" :breadcrumb-items="breadcrumbItems">
+
+    <template #navi>
+      <v-navigation-drawer v-model="drawer" clipped app>
+        <NaviMenu class="navimenu-area"></NaviMenu>
+      </v-navigation-drawer>
+    </template>
+
+    <template #naviIcon>
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+    </template>
+
     <template #main>
       <v-container fluid>
         <v-row>
@@ -87,17 +98,19 @@
 import BasePage from '@/components/BasePage'
 export default {
   components: {
-    BasePage
+    BasePage,
   },
   async asyncData({ $axios }) {
     // 前ページでとってきたAPIをsessionStrageかlocalStrageに保存
     const defaultCity = 'Tokyo'
-    const AWS_ID = 'VEGEDIGI'
+    // const AWS_ID = 'VEGEDIGI'
+
 
     // URL、環境変数に移動する
     const URL = `https://api.openweathermap.org/data/2.5/weather?q=${defaultCity},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`;
     const URL_THREE_HOUR = `https://api.openweathermap.org/data/2.5/forecast?q=${defaultCity},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`;
-    const URL_AWS_IMAGE = `https://vda9ujojtg.execute-api.ap-northeast-1.amazonaws.com/store/${AWS_ID}/image?date=20210815`
+    // const URL_AWS_IMAGE = `https://vda9ujojtg.execute-api.ap-northeast-1.amazonaws.com/store/${AWS_ID}/image?date=20210815`
+    const URL_AWS_IMAGE = 'https://r67xjz1uyc.execute-api.ap-northeast-1.amazonaws.com/store/aeon_rifu_1/image'
 
     // promise.allにする予定
     const todaysRes = await $axios.$get(URL)
@@ -125,6 +138,7 @@ export default {
   },
   data () {
     return {
+      drawer:null,
       breadcrumbItems: [],
       city: {
         name: '',

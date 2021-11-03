@@ -1,7 +1,5 @@
 <template>
 <div>
-  
-  <v-navigation-drawer permanent class="light" dark>
     <v-list dense nav>
       <v-list-item
         v-for="(item, index) in menuItems"
@@ -24,50 +22,17 @@
       </v-list-item>
 
     </v-list>
-  </v-navigation-drawer>
 </div>
 </template>
 
 <script>
 export default {
   data () {
-    const menuItems = []
+    return{
+      menuItems:[]
+    }
+    
     //  管理者かつ売り場状況内
-    if (this.$route.path.startsWith('/admin/stores/')) {
-      menuItems.push({
-        title: '売り場状況',
-        icon: 'mdi-image',
-        iconright: 'mdi-chevron-right',
-        link: '/admin/stores/floor/',
-        action: () => {}
-      })
-      menuItems.push({
-        title: '過去売り上げグラフ',
-        icon: 'mdi-chart-bar',
-        iconright: 'mdi-chevron-right',
-        link: '/admin/stores/graph/',
-        action: () => {}
-      })
-    }
-    if (this.$route.path.startsWith('/admin/users/')) {
-      menuItems.push({
-        title: '新規会員登録',
-        icon: 'mdi-account-plus',
-        iconright: 'mdi-chevron-right',
-        link: '/admin/users/create/',
-        action: () => {}
-      })
-      menuItems.push({
-        title: '会員情報変更',
-        icon: 'mdi-account-cog',
-        iconright: 'mdi-chevron-right',
-        link: '/admin/users/update/',
-        action: () => {}
-      })
-    }
-    return {
-      menuItems,
-    }
   },
   mounted() {
     //  管理者ページ内
@@ -105,6 +70,41 @@ export default {
       // }
     }
   },
+  created(){
+    if (this.$route.path.startsWith('/admin/stores/')) {
+      this.menuItems.push({
+        title: '売り場状況',
+        icon: 'mdi-image',
+        iconright: 'mdi-chevron-right',
+        link: '/admin/stores/floor/',
+        action: () => {}
+      })
+      this.menuItems.push({
+        title: '過去売り上げグラフ',
+        icon: 'mdi-chart-bar',
+        iconright: 'mdi-chevron-right',
+        link: '/admin/stores/graph/',
+        action: () => {}
+      })
+      }
+    if (this.$route.path.startsWith('/admin/users/')) {
+      this.menuItems.push({
+        title: '新規会員登録',
+        icon: 'mdi-account-plus',
+        iconright: 'mdi-chevron-right',
+        link: '/admin/users/create/',
+        action: () => {}
+      })
+      this.menuItems.push({
+        title: '会員情報変更',
+        icon: 'mdi-account-cog',
+        iconright: 'mdi-chevron-right',
+        link: '/admin/users/update/',
+        action: () => {}
+      })
+    }
+  },
+
   methods: {
     // handleClick(title) {
     //   if(title==='過去売り上げグラフ') {
