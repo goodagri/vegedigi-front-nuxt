@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  
     <BasePage page-title="売り場状況" :breadcrumb-items="breadcrumbItems">
 
     <template #navi>
@@ -91,14 +91,15 @@
       </v-container>
     </template>
     </BasePage>
-  </v-app>
 </template>
 
 <script>
 import BasePage from '@/components/BasePage'
+import NaviMenu from '@/components/NaviMenu'
 export default {
   components: {
     BasePage,
+    NaviMenu
   },
   async asyncData({ $axios }) {
     // 前ページでとってきたAPIをsessionStrageかlocalStrageに保存

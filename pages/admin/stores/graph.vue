@@ -1,5 +1,4 @@
 <template>
-  <v-app>
     <BasePage page-title="過去売り上げグラフ" :breadcrumb-items="breadcrumbItems">
     <template #main>
       <v-container fluid>
@@ -53,7 +52,6 @@
       </v-container>
     </template>
     </BasePage>
-  </v-app>
 </template>
 
 <script>

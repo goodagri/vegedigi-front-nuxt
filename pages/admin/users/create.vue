@@ -1,5 +1,4 @@
 <template>
-  <v-app>
     <BasePage page-title="新規会員登録" :breadcrumb-items="breadcrumbItems">
       <template #main>
         <v-container fluid>
@@ -19,7 +18,6 @@
         </v-container>
       </template>
     </BasePage>
-  </v-app>
 </template>
 
 <script>

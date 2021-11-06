@@ -1,5 +1,5 @@
 <template>
-<dev>
+<v-app>
   <slot name="navi"></slot>
 
   <v-app-bar
@@ -55,7 +55,7 @@
     </v-row>
   </v-main>
 
-</dev>
+</v-app>
 </template>
 
 <script>
