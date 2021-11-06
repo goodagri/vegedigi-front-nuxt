@@ -1,6 +1,10 @@
 <template>
 <v-app>
-  <slot name="navi"></slot>
+
+  <v-navigation-drawer v-model="drawer" clipped app>
+    <NaviMenu class="navimenu-area"></NaviMenu>
+  </v-navigation-drawer>
+  
 
   <v-app-bar
     color="light"
@@ -8,7 +12,7 @@
     clipped-left
     app
   >
-    <slot name="naviIcon"></slot>
+    <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
     <v-app-bar-title class="text-no-wrap">
       {{ pageTitle }}
@@ -33,26 +37,36 @@
         </v-list-item>
       </v-list>
     </v-menu>
+
   </v-app-bar>
 
   <!-- アプリケーションのコンポーネントに基づいてコンテンツのサイズを決定 -->
   <v-main>
-    <v-breadcrumbs :items="breadcrumbItems">
-      <template #item="props">
-        <v-breadcrumbs-item
-          exact
-          :disabled="props.item.disabled"
-          :to="props.item.href"
-          nuxt
-        >
-          {{ props.item.text }}
-        </v-breadcrumbs-item>
-      </template>
-    </v-breadcrumbs>
+    <v-container>
     <v-row>
-      <slot name="main">
-      </slot>
+
+      <slot name="sideMenu"></slot>
+
+    <v-col>
+      <v-breadcrumbs :items="breadcrumbItems">
+        <template #item="props">
+          <v-breadcrumbs-item
+            exact
+            :disabled="props.item.disabled"
+            :to="props.item.href"
+            nuxt
+          >
+            {{ props.item.text }}
+          </v-breadcrumbs-item>
+        </template>
+      </v-breadcrumbs>
+      <v-row>
+        <slot name="main">
+        </slot>
+      </v-row>
+    </v-col>
     </v-row>
+    </v-container>
   </v-main>
 
 </v-app>
@@ -73,7 +87,8 @@ export default {
   data () {
     return {
       menuItems: [],
-      isShow: true,
+      drawer:false,
+      colSize:"2"
     }
   },
   created() {
@@ -83,11 +98,17 @@ export default {
       link: '/admin/stores/floor/',
       action: () => {}
     })
+
     this.menuItems.push({
-      title: '新規会員登録',
-      link: '/admin/users/create/',
+      title: '会員一覧',
+      link: '/admin/users/',
       action: () => {}
     })
+    // this.menuItems.push({
+    //   title: '新規会員登録',
+    //   link: '/admin/users/create/',
+    //   action: () => {}
+    // })
     //  管理者
     // if (this.$auth.user.is_superuser) {
     //   this.menuItems.push({
@@ -96,11 +117,11 @@ export default {
     //     action: () => {}
     //   })
     // }
-    this.menuItems.push({
-      title: '会員情報変更',
-      link: '/admin/users/update/',
-      action: () => {}
-    })
+    // this.menuItems.push({
+    //   title: '会員情報変更',
+    //   link: '/admin/users/update/',
+    //   action: () => {}
+    // })
     this.menuItems.push({
       title: 'ログアウト',
       action: this.logout

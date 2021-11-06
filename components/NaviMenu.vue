@@ -71,7 +71,6 @@ export default {
     }
   },
   created(){
-    if (this.$route.path.startsWith('/admin/stores/')) {
       this.menuItems.push({
         title: '売り場状況',
         icon: 'mdi-image',
@@ -86,23 +85,6 @@ export default {
         link: '/admin/stores/graph/',
         action: () => {}
       })
-      }
-    if (this.$route.path.startsWith('/admin/users/')) {
-      this.menuItems.push({
-        title: '新規会員登録',
-        icon: 'mdi-account-plus',
-        iconright: 'mdi-chevron-right',
-        link: '/admin/users/create/',
-        action: () => {}
-      })
-      this.menuItems.push({
-        title: '会員情報変更',
-        icon: 'mdi-account-cog',
-        iconright: 'mdi-chevron-right',
-        link: '/admin/users/update/',
-        action: () => {}
-      })
-    }
   },
 
   methods: {
