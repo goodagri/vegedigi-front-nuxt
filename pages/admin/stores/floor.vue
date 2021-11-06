@@ -1,15 +1,35 @@
 <template>
-  
+
     <BasePage page-title="売り場状況" :breadcrumb-items="breadcrumbItems">
+    <template #sideMenu>
+    <v-col cols="12" sm="12" md="2" lg="2" xl="2" xs="12">
+      <v-sheet
+        rounded="lg"
+      >
+        <v-list color="transparent">
+          <v-list-item>
+            <v-list-item-content>
+              売り場状況
+              <v-list-item-title>                
+              <v-select
+                :items="Shops"
+                label="店舗選択"
+                solo
+              ></v-select>
 
-    <template #navi>
-      <v-navigation-drawer v-model="drawer" clipped app>
-        <NaviMenu class="navimenu-area"></NaviMenu>
-      </v-navigation-drawer>
-    </template>
+              売上グラフ
+              <v-select
+                :items="Shops"
+                label="店舗選択"
+                solo
+              ></v-select>
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
-    <template #naviIcon>
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+        </v-list>
+      </v-sheet>
+    </v-col>
     </template>
 
     <template #main>
@@ -95,11 +115,9 @@
 
 <script>
 import BasePage from '@/components/BasePage'
-import NaviMenu from '@/components/NaviMenu'
 export default {
   components: {
-    BasePage,
-    NaviMenu
+    BasePage
   },
   async asyncData({ $axios }) {
     // 前ページでとってきたAPIをsessionStrageかlocalStrageに保存
@@ -139,7 +157,7 @@ export default {
   },
   data () {
     return {
-      drawer:null,
+      Shops: ['Foo', 'Bar', 'Fizz', 'Buzz'],
       breadcrumbItems: [],
       city: {
         name: '',
