@@ -2,8 +2,14 @@
   <v-app>
     <BasePage page-title="会員情報変更画面" :breadcrumb-items="breadcrumbItems">
       <template #main>
-        <p>会員ID</p>
-        <p>{{appResponse}}</p>
+        <v-container fluid>
+          <p class="text-subtitle-1 font-weight-bold">会員情報変更</p>
+          <p>会員ID: {{appResponse}}</p>
+          <UserForm />
+          <v-row class="justify-center">
+            <v-btn class="primary" @click="onSubmit">この内容で会員情報を変更する</v-btn>
+          </v-row>
+        </v-container>
       </template>
     </BasePage>
   </v-app>
@@ -22,92 +28,26 @@ export default {
   },
   data () {
     return {
-      breadcrumbItems: []
+      breadcrumbItems: [
+        {
+          text: '会員一覧',
+          disabled: false,
+          href: '/admin/users'
+        },
+        {
+          text: '会員情報変更',
+          disabled: true,
+          href: ''
+        }
+      ]
     }
   },
   computed: {
   },
-  watch: {
-    dialog(val) {
-      val || this.close()
-    },
-    dialogDelete(val) {
-      val || this.closeDelete()
-    },
-  },
-  created () {
-    this.initialize()
-  },
   methods: {
-    initialize () {
-      this.users = [
-        {
-          name: '宇多田 恵麻',
-          mail: 'utada_ema@example.com',
-          birthday: '1988/3/2',
-          carbs: 24,
-          protein: 4.0,
-        },
-        {
-          name: '松原 恭子',
-          mail: 'matsubara_kyouko@example.com',
-          birthday: '1985/3/5',
-          carbs: 37,
-          protein: 4.3,
-        },
-        {
-          name: '細野 さやか',
-          mail: 'hosono_sayaka@example.com',
-          birthday: '1997/4/1',
-          carbs: 51,
-          protein: 4.9,
-        },
-        {
-          name: '川畑 倫子',
-          mail: 'kawahata_noriko@example.com',
-          birthday: '1984/2/21',
-          carbs: 65,
-          protein: 7,
-        },
-      ]
-    },
-    editItem (item) {
-      this.editIndex = this.users.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.$router.push('/users/' + item.id)
-      this.dialog = true
-    },
-    deleteItem(item) {
-      this.editedIndex = this.dessets.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialogDelete = true
-    },
-    deleteItemConfirm() {
-      this.users.splice(this.editedIndex, 1)
-      this.closeDelete()
-    },
-    close() {
-      this.dialog = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
-    },
-    closeDelete () {
-      this.dialogDelete = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
-    },
-    save () {
-      if (this.editedIndex > -1) {
-        Object.assign(this.users[this.editedIndex], this.editedItem)
-      } else {
-        this.users.push(this.editedItem)
-      }
-      this.close()
-    },
+    onSubmit () {
+      alert('確認のEmail送信して、DBに会員情報を更新して、送信画面に遷移する。')
+    }
   }
 }
 </script>
