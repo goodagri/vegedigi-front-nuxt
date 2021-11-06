@@ -1,60 +1,63 @@
 <template>
-  <div class="app_top">
-    <v-app-bar
-      color="light"
-      fixed
-      app
-    >
-      <v-app-bar-title class="text-no-wrap">
-        {{ pageTitle }}
-      </v-app-bar-title>
-      <v-spacer></v-spacer>
-      <slot name="headerActions"></slot>
-      <v-menu>
-        <template #activator="{ on }" >
-          <v-btn icon v-on="on">
-            <v-icon>mdi-apps</v-icon>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item
-            v-for="(item, index) in menuItems"
-            :key="index"
-            nuxt
-            :to="item.link"
-            @click="item.action"
-          >
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </v-app-bar>
-    <v-main>
-      <v-breadcrumbs :items="breadcrumbItems">
-        <template #item="props">
-          <v-breadcrumbs-item
-            exact
-            :disabled="props.item.disabled"
-            :to="props.item.href"
-            nuxt
-          >
-            {{ props.item.text }}
-          </v-breadcrumbs-item>
-        </template>
-      </v-breadcrumbs>
-      <v-row>
-        <v-col class="col-xs-12 col-sm-12 col-md-4">
-          <p class="bg-black">aaaa</p>
-          <NaviMenu class="navimenu-area"></NaviMenu>
-        </v-col>
-          <v-col class="col-xs-12 col-sm-12 col-md-8">
-          <slot name="main">
-          </slot>
-        </v-col>
-      </v-row>
-    </v-main>
-  </div>
+<v-app>
+  <slot name="navi"></slot>
+
+  <v-app-bar
+    color="light"
+    fixed
+    clipped-left
+    app
+  >
+    <slot name="naviIcon"></slot>
+
+    <v-app-bar-title class="text-no-wrap">
+      {{ pageTitle }}
+    </v-app-bar-title>
+    <v-spacer></v-spacer>
+    <slot name="headerActions"></slot>
+    <v-menu>
+      <template #activator="{ on }" >
+        <v-btn icon v-on="on">
+          <v-icon>mdi-apps</v-icon>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="(item, index) in menuItems"
+          :key="index"
+          nuxt
+          :to="item.link"
+          @click="item.action"
+        >
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+  </v-app-bar>
+
+  <!-- アプリケーションのコンポーネントに基づいてコンテンツのサイズを決定 -->
+  <v-main>
+    <v-breadcrumbs :items="breadcrumbItems">
+      <template #item="props">
+        <v-breadcrumbs-item
+          exact
+          :disabled="props.item.disabled"
+          :to="props.item.href"
+          nuxt
+        >
+          {{ props.item.text }}
+        </v-breadcrumbs-item>
+      </template>
+    </v-breadcrumbs>
+    <v-row>
+      <slot name="main">
+      </slot>
+    </v-row>
+  </v-main>
+
+</v-app>
 </template>
+
 <script>
 export default {
   props: {
