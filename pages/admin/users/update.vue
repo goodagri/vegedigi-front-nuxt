@@ -48,16 +48,20 @@
                 :items="productMethod"
                 :rules="[required]"
               />
-              <v-card class="mt-5">
-                <v-card-subtitle class="ml-1">主な生産品目</v-card-subtitle>
-                <v-flex v-for="production in productions" :key="production" class="ml-5">
-                  <v-checkbox
+              <v-row>
+                <v-col
+                  class="d-flex"
+                  cols="12"
+                >
+                  <v-combobox
                     v-model="selectedProductions"
-                    :label="production"
-                    :value="production"
+                    label="主な生産品目"
+                    :items="productions"
+                    multiple
+                    chips
                   />
-                </v-flex>
-              </v-card>
+                </v-col>
+              </v-row>
             <div class="text-center mt-5">
               <v-btn color="primary" @click="onSubmit">この内容で会員情報を変更する</v-btn>
             </div>
