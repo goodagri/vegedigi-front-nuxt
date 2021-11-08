@@ -49,8 +49,7 @@
                   :rules="[required]"
                 />
                 <v-card>
-                  <v-card-title-2 class="ml-5">主な生産品目</v-card-title-2>
-                  <v-card-subtitle class="ml-5">{{ selectedProductions }}</v-card-subtitle>
+                  <v-card-title class="ml-1">主な生産品目</v-card-title>
                   <v-flex v-for="production in productions" :key="production" class="ml-5">
                     <v-checkbox
                       v-model="selectedProductions"
@@ -59,7 +58,7 @@
                     />
                   </v-flex>
                 </v-card>
-              <div class="center mt-5">
+              <div class="text-center mt-5">
                 <v-btn color="primary" @click="onSubmit">この内容で会員情報を登録する</v-btn>
               </div>
               </v-form>
