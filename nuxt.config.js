@@ -5,6 +5,7 @@ dotenv.config();
 const { API_KEY } = process.env;
 
 export default defineNuxtConfig({
+  loading: './components/Loading.vue',
   bridge: false,
   privateRuntimeConfig: {
   //   apiKey: API_KEY
