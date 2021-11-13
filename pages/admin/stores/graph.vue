@@ -1,5 +1,38 @@
 <template>
     <BasePage page-title="過去売り上げグラフ" :breadcrumb-items="breadcrumbItems">
+
+    <template #sideMenu>
+    <v-col cols="12" sm="12" md="2" lg="2" xl="2" xs="12">
+      <v-sheet
+        rounded="lg"
+      >
+        <v-list color="transparent">
+
+          <v-list-item>
+            <v-list-item-content>
+              売り場状況
+              <v-list-item-title>                
+              <v-select
+                :items="Shops"
+                label="店舗選択"
+                solo
+              ></v-select>
+
+              売上グラフ
+              <v-select
+                :items="Shops"
+                label="店舗選択"
+                solo
+              ></v-select>
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+
+        </v-list>
+      </v-sheet>
+    </v-col>
+    </template>
+
     <template #main>
       <v-container fluid>
         <v-row>
@@ -62,6 +95,7 @@ export default {
   },
   data () {
     return {
+      Shops: ['Foo', 'Bar', 'Fizz', 'Buzz'],
       breadcrumbItems: [],
       value: [
       423,

@@ -216,19 +216,7 @@ export default {
     },
   },
   created() {
-    //  for文でthreehoursResのデータをforecastに入れる
-    for(let i=0; i < 15; i++) {
-      const splitDate = this.threehoursRes.list[i].dt_txt.split(/:| |-/)
-      const weatherIcon = this.getWeatherDiscriptionToJapanese(this.threehoursRes.list[i].weather[0].main)
-      const regex = /09|12|15|18/g;
-      if(splitDate[3].search(regex) !== -1) {
-        this.forecast.push({
-          day: `${splitDate[1]}/${splitDate[2]} ${splitDate[3]}:${splitDate[4]}`,
-          icon: weatherIcon.icon,
-          temp: `${parseInt(this.threehoursRes.list[i].main.temp_max + 0.5)}\xB0/${parseInt(this.threehoursRes.list[i].main.temp_min + 0.5)}\xB0`
-        })
-      }
-    }
+    this.getThreeHoursRes()
   },
   mounted() {
     this.dummyText = `_/_/_/_/_/_/_/_/ 10:00 野菜状況 _/_/_/_/_/_/_/_/\n\n売り場状況報告です。 東京駅 09月05日\n売場にたくさん並んでいるものは、シイタケ トマト です。\n全体的に動きは鈍いです。\n引き続きご出荷お待ちしております。\n下記のURLから売場の状況写真はこちらから見ることができます。`
@@ -280,6 +268,20 @@ export default {
             return disc;
       }
     },
+    getThreeHoursRes(){
+      for(let i=0; i < 15; i++) {
+        const splitDate = this.threehoursRes.list[i].dt_txt.split(/:| |-/)
+        const weatherIcon = this.getWeatherDiscriptionToJapanese(this.threehoursRes.list[i].weather[0].main)
+        const regex = /09|12|15|18/g;
+        if(splitDate[3].search(regex) !== -1) {
+          this.forecast.push({
+            day: `${splitDate[1]}/${splitDate[2]} ${splitDate[3]}:${splitDate[4]}`,
+            icon: weatherIcon.icon,
+            temp: `${parseInt(this.threehoursRes.list[i].main.temp_max + 0.5)}\xB0/${parseInt(this.threehoursRes.list[i].main.temp_min + 0.5)}\xB0`
+          })
+        }
+      }
+    }
   }
 }
 </script>
