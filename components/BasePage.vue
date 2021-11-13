@@ -88,6 +88,7 @@ export default {
     return {
       menuItems: [],
       drawer:false,
+      colSize:"2"
     }
   },
   created() {
@@ -137,7 +138,7 @@ export default {
     //     console.log(err)
     //   })
     // }
-  },
+  }
 }
 </script>
 <style scoped>
