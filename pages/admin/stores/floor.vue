@@ -188,7 +188,7 @@ export default {
       forecast: [],
       vegetables: [
         {
-          name: 'にんじん',
+          name: '人参',
           numbers: 5,
         },
         {
