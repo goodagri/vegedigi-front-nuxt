@@ -1,7 +1,7 @@
 <template>
 <v-app>
 
-  <v-navigation-drawer v-model="drawer" clipped app>
+  <v-navigation-drawer v-model="drawer" bottom clipped app>
     <NaviMenu class="navimenu-area"></NaviMenu>
   </v-navigation-drawer>
   
@@ -47,24 +47,24 @@
 
       <slot name="sideMenu"></slot>
 
-    <v-col>
-      <v-breadcrumbs :items="breadcrumbItems">
-        <template #item="props">
-          <v-breadcrumbs-item
-            exact
-            :disabled="props.item.disabled"
-            :to="props.item.href"
-            nuxt
-          >
-            {{ props.item.text }}
-          </v-breadcrumbs-item>
-        </template>
-      </v-breadcrumbs>
-      <v-row>
-        <slot name="main">
-        </slot>
-      </v-row>
-    </v-col>
+      <v-col cols="10">
+        <v-breadcrumbs :items="breadcrumbItems">
+          <template #item="props">
+            <v-breadcrumbs-item
+              exact
+              :disabled="props.item.disabled"
+              :to="props.item.href"
+              nuxt
+            >
+              {{ props.item.text }}
+            </v-breadcrumbs-item>
+          </template>
+        </v-breadcrumbs>
+        <v-row>
+          <slot name="main">
+          </slot>
+        </v-row>
+      </v-col>
     </v-row>
     </v-container>
   </v-main>
