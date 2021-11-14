@@ -78,13 +78,13 @@ export default {
         link: '/admin/stores/floor/',
         action: () => {}
       })
-      this.menuItems.push({
-        title: '過去売り上げグラフ',
-        icon: 'mdi-chart-bar',
-        iconright: 'mdi-chevron-right',
-        link: '/admin/stores/graph/',
-        action: () => {}
-      })
+      // this.menuItems.push({
+      //   title: '過去売り上げグラフ',
+      //   icon: 'mdi-chart-bar',
+      //   iconright: 'mdi-chevron-right',
+      //   link: '/admin/stores/graph/',
+      //   action: () => {}
+      // })
   },
 
   methods: {

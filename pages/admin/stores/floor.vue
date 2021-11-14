@@ -13,16 +13,19 @@
               <v-list-item-title>                
               <v-select
                 :items="Shops"
+                item-text="shopName"
                 label="店舗選択"
                 solo
+                return-object
+                @input="SelectShop"
               ></v-select>
 
-              売上グラフ
+              <!-- 売上グラフ
               <v-select
                 :items="Shops"
                 label="店舗選択"
                 solo
-              ></v-select>
+              ></v-select> -->
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -37,8 +40,14 @@
         <v-row>
           <v-col>
             <div class="mb-5">
+              <h2>{{tenpo}}</h2>
               <p class="text-subtitle-1 font-weight-bold">最新の売り場状況</p>
-              <v-carousel>
+              <v-img
+                max-height="500"
+                contain
+                :src="item.src"
+              ></v-img>              
+              <!-- <v-carousel>
                 <v-carousel-item
                   v-for="(item,i) in items"
                   :key="i"
@@ -46,7 +55,7 @@
                   reverse-transition="fade-transition"
                   transition="fade-transition"
                 ></v-carousel-item>
-              </v-carousel>
+              </v-carousel> -->
             </div>
 
             <div class="mb-5">
@@ -122,19 +131,21 @@ export default {
   async asyncData({ $axios }) {
     // 前ページでとってきたAPIをsessionStrageかlocalStrageに保存
     const defaultCity = 'Tokyo'
-    // const AWS_ID = 'VEGEDIGI'
-
 
     // URL、環境変数に移動する
     const URL = `https://api.openweathermap.org/data/2.5/weather?q=${defaultCity},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`;
     const URL_THREE_HOUR = `https://api.openweathermap.org/data/2.5/forecast?q=${defaultCity},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`;
-    // const URL_AWS_IMAGE = `https://vda9ujojtg.execute-api.ap-northeast-1.amazonaws.com/store/${AWS_ID}/image?date=20210815`
     const URL_AWS_IMAGE = 'https://r67xjz1uyc.execute-api.ap-northeast-1.amazonaws.com/store/aeon_rifu_1/image'
 
     // promise.allにする予定
     const todaysRes = await $axios.$get(URL)
     const threehoursRes = await $axios.$get(URL_THREE_HOUR)
-    const S3_IMAGE = await $axios.$get(URL_AWS_IMAGE)
+    let S3_IMAGE = {}
+    try{
+      S3_IMAGE = await $axios.$get(URL_AWS_IMAGE)
+    }catch(e){
+      S3_IMAGE = await $axios.$get(URL_AWS_IMAGE+'?date=yesterday')
+    }
     return {
       city: {
         name: todaysRes.name,
@@ -146,19 +157,29 @@ export default {
         icon: todaysRes.weather[0].icon
       },
       threehoursRes,
-      items: [{
+      item: {
         src: S3_IMAGE.url
       },
-      {
-        src: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
-      }],
       S3_IMAGE,
     }
   },
   data () {
     return {
-      Shops: ['Foo', 'Bar', 'Fizz', 'Buzz'],
+      tenpo:'イオン利府1',
+      // Shops: ['Foo', 'Bar', 'Fizz', 'Buzz'],
+      Shops: [
+        {
+          shopName:'イオン利府1',
+          shopId:'aeon_rifu_1',
+          city:'tokyo'
+        },
+        {
+          shopName:'イオン利府2',
+          shopId:'aeon_rifu_2',
+          city:'sapporo'
+        }],
       breadcrumbItems: [],
+      S3_IMAGE:{},
       city: {
         name: '',
         date: '',
@@ -204,7 +225,7 @@ export default {
           numbers: 2,
         },
       ],
-      items: [],
+      item: {},
     }
   },
   computed: {
@@ -217,18 +238,7 @@ export default {
   },
   created() {
     //  for文でthreehoursResのデータをforecastに入れる
-    for(let i=0; i < 15; i++) {
-      const splitDate = this.threehoursRes.list[i].dt_txt.split(/:| |-/)
-      const weatherIcon = this.getWeatherDiscriptionToJapanese(this.threehoursRes.list[i].weather[0].main)
-      const regex = /09|12|15|18/g;
-      if(splitDate[3].search(regex) !== -1) {
-        this.forecast.push({
-          day: `${splitDate[1]}/${splitDate[2]} ${splitDate[3]}:${splitDate[4]}`,
-          icon: weatherIcon.icon,
-          temp: `${parseInt(this.threehoursRes.list[i].main.temp_max + 0.5)}\xB0/${parseInt(this.threehoursRes.list[i].main.temp_min + 0.5)}\xB0`
-        })
-      }
-    }
+    this.getThreeHourRes()
   },
   mounted() {
     this.dummyText = `_/_/_/_/_/_/_/_/ 10:00 野菜状況 _/_/_/_/_/_/_/_/\n\n売り場状況報告です。 東京駅 09月05日\n売場にたくさん並んでいるものは、シイタケ トマト です。\n全体的に動きは鈍いです。\n引き続きご出荷お待ちしております。\n下記のURLから売場の状況写真はこちらから見ることができます。`
@@ -280,6 +290,87 @@ export default {
             return disc;
       }
     },
+    getThreeHourRes(){
+      this.forecast = []
+      for(let i=0; i < 15; i++) {
+        const splitDate = this.threehoursRes.list[i].dt_txt.split(/:| |-/)
+        const weatherIcon = this.getWeatherDiscriptionToJapanese(this.threehoursRes.list[i].weather[0].main)
+        const regex = /09|12|15|18/g;
+        if(splitDate[3].search(regex) !== -1) {
+          this.forecast.push({
+            day: `${splitDate[1]}/${splitDate[2]} ${splitDate[3]}:${splitDate[4]}`,
+            icon: weatherIcon.icon,
+            temp: `${parseInt(this.threehoursRes.list[i].main.temp_max + 0.5)}\xB0/${parseInt(this.threehoursRes.list[i].main.temp_min + 0.5)}\xB0`
+          })
+        }
+      }      
+    },
+    async SelectShop(value){
+      this.$nuxt.$loading.start()
+      this.tenpo = value.shopName
+      // const URL = `https://api.openweathermap.org/data/2.5/weather?q=${value.city},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`;
+      // const URL_THREE_HOUR = `https://api.openweathermap.org/data/2.5/forecast?q=${value.city},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`;      
+      // const URL_AWS_IMAGE = `https://r67xjz1uyc.execute-api.ap-northeast-1.amazonaws.com/store/${value.shopId}/image`
+
+      // const todaysRes = await this.$axios.$get(URL)
+      // this.threehoursRes = await this.$axios.$get(URL_THREE_HOUR)
+      // try{
+      //   this.S3_IMAGE = await this.$axios.$get(URL_AWS_IMAGE)
+      // }catch(e){
+      //   this.S3_IMAGE = await this.$axios.$get(URL_AWS_IMAGE+'?date=yesterday')
+      // }
+
+      await this.todaysRes(value.city)
+      await this.get3h(value.city)
+      await this.getS3Data(value.shopId)
+      // this.city = {
+      //     name: todaysRes.name,
+      //     date: new Date(todaysRes.dt * 1000),
+      //     temp: parseInt(todaysRes.main.temp + 0.5),
+      //     tempMax: todaysRes.main.temp_max,
+      //     tempMin: todaysRes.main.temp_min,
+      //     main: todaysRes.weather[0].main,
+      //     icon: todaysRes.weather[0].icon
+      //   }
+
+        // this.items = [{
+        //   src: this.S3_IMAGE.url
+        // }
+        // ]
+      this.getThreeHourRes()
+      this.$nuxt.$loading.finish()
+      },
+
+    async getS3Data(shopId){
+      const URL_AWS_IMAGE = `https://r67xjz1uyc.execute-api.ap-northeast-1.amazonaws.com/store/${shopId}/image`
+      try{
+        this.S3_IMAGE = await this.$axios.$get(URL_AWS_IMAGE)
+      }catch(e){
+        this.S3_IMAGE = await this.$axios.$get(URL_AWS_IMAGE+'?date=yesterday')
+      }
+      this.item = {
+        src: this.S3_IMAGE.url
+        }
+    },
+
+    async todaysRes(city){
+      const URL = `https://api.openweathermap.org/data/2.5/weather?q=${city},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`
+      const todaysRes = await this.$axios.$get(URL)
+      this.city = {
+          name: todaysRes.name,
+          date: new Date(todaysRes.dt * 1000),
+          temp: parseInt(todaysRes.main.temp + 0.5),
+          tempMax: todaysRes.main.temp_max,
+          tempMin: todaysRes.main.temp_min,
+          main: todaysRes.weather[0].main,
+          icon: todaysRes.weather[0].icon
+        }
+    },
+
+    async get3h(city){
+      const URL_THREE_HOUR = `https://api.openweathermap.org/data/2.5/forecast?q=${city},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`
+      this.threehoursRes = await this.$axios.$get(URL_THREE_HOUR)
+    }
   }
 }
 </script>
