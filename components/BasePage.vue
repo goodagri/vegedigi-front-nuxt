@@ -47,7 +47,7 @@
 
       <slot name="sideMenu"></slot>
 
-      <v-col cols="10">
+      <v-col>
         <v-breadcrumbs :items="breadcrumbItems">
           <template #item="props">
             <v-breadcrumbs-item
@@ -93,11 +93,11 @@ export default {
   },
   created() {
     //  一般ユーザー
-    this.menuItems.push({
-      title: '売り場状況',
-      link: '/admin/stores/floor/',
-      action: () => {}
-    })
+    // this.menuItems.push({
+    //   title: '売り場状況',
+    //   link: '/admin/stores/floor/',
+    //   action: () => {}
+    // })
 
     this.menuItems.push({
       title: '会員一覧',
