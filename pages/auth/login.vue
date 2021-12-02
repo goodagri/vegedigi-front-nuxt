@@ -37,7 +37,7 @@
               </div> -->
               <v-card-actions>
                 <v-row justify="end">
-                  <v-btn color="success" @click.prevent="onCognitoAuthenticateUser">ログイン</v-btn>
+                  <v-btn color="success" @click.prevent="onClickAuthUser">ログイン</v-btn>
                 </v-row>
               </v-card-actions>
             </v-form>
@@ -82,6 +82,10 @@ export default {
   methods: {
     switchPasswordInputType () {
       this.isPasswordHidden = !this.isPasswordHidden
+    },
+    onClickAuthUser() {
+      this.onCognitoAuthenticateUser()
+      this.$router.push('/admin/stores/floor')
     },
     onCognitoAuthenticateUser () {
       const authenticationData = {
@@ -170,6 +174,7 @@ export default {
               //     const secretAccessKey = AWS.config.credentials.secretAccessKey;
               //     const sessionToken = AWS.config.credentials.sessionToken;
               // });
+            
           },
 
           onFailure (err) {
