@@ -180,12 +180,12 @@ export default {
         {
           shopName:'イオン利府1',
           shopId:'aeon_rifu_1',
-          city:'tokyo'
+          coord:{lon:'139.768889',lat:'35.676111'}
         },
         {
           shopName:'イオン利府2',
           shopId:'aeon_rifu_2',
-          city:'sapporo'
+          coord:{lon:'135.780833',lat:'35.026111'}
         }],
       coord:{},
       breadcrumbItems: [],
@@ -319,7 +319,7 @@ export default {
     async SelectShop(value){
       await this.$nuxt.$loading.start()
       this.tenpo = value.shopName
-      Promise.all([this.todaysRes(value.city),this.get3h(value.city),this.getS3Data(value.shopId)]).then(values=>{
+      Promise.all([this.todaysRes(value.coord),this.get3h(value.coord),this.getS3Data(value.shopId)]).then(values=>{
         this.getThreeHourRes()
         this.$nuxt.$loading.finish()
         })
@@ -347,9 +347,10 @@ export default {
         }
     },
 
-    async todaysRes(city){
-      const URL = `https://api.openweathermap.org/data/2.5/weather?lat=${this.coord.lat}&lon=${this.coord.lon}&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`
+    async todaysRes(coord){
+      const URL = `https://api.openweathermap.org/data/2.5/weather?lat=${coord.lat}&lon=${coord.lon}&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`
       const todaysRes = await this.$axios.$get(URL)
+      console.log(todaysRes)
       this.city = {
           name: todaysRes.name,
           date: new Date(todaysRes.dt * 1000),
@@ -357,12 +358,13 @@ export default {
           tempMax: todaysRes.main.temp_max,
           tempMin: todaysRes.main.temp_min,
           main: todaysRes.weather[0].main,
-          icon: todaysRes.weather[0].icon
+          icon: todaysRes.weather[0].icon,
+          coord: todaysRes.coord
         }
     },
 
-    async get3h(city){
-      const URL_THREE_HOUR = `https://api.openweathermap.org/data/2.5/forecast?q=${city},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`
+    async get3h(coord){
+      const URL_THREE_HOUR = `https://api.openweathermap.org/data/2.5/forecast?lat=${coord.lat}&lon=${coord.lon}&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`
       this.threehoursRes = await this.$axios.$get(URL_THREE_HOUR)
     }
   }
