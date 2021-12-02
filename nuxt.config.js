@@ -2,7 +2,7 @@ import colors from 'vuetify/es5/util/colors'
 import { defineNuxtConfig } from '@nuxt/bridge'
 import dotenv from 'dotenv'
 dotenv.config();
-const { API_KEY } = process.env;
+const { API_KEY, COGNITO_USER_POOL_ID, COGNITO_CLIENT_ID, COGNITO_ID_POOL_ID, COGNITO_REGION } = process.env;
 
 export default defineNuxtConfig({
   loading: './components/Loading.vue',
@@ -83,6 +83,10 @@ export default defineNuxtConfig({
   build: {
   },
   env: {
-    API_KEY
+    API_KEY,
+    COGNITO_USER_POOL_ID,
+    COGNITO_CLIENT_ID,
+    COGNITO_ID_POOL_ID,
+    COGNITO_REGION
   }
 })
