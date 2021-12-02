@@ -129,13 +129,16 @@ export default {
     BasePage
   },
   async asyncData({ $axios }) {
+    
     // 前ページでとってきたAPIをsessionStrageかlocalStrageに保存
-    const defaultCity = 'Tokyo'
+    // const defaultCity = 'Tokyo'
     const defaultStore = 'aeon_rifu_1'
+    const coord = {lon:'139.768889',lat:'35.676111'}
 
     // URL、環境変数に移動する
-    const URL = `https://api.openweathermap.org/data/2.5/weather?q=${defaultCity},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`;
-    const URL_THREE_HOUR = `https://api.openweathermap.org/data/2.5/forecast?q=${defaultCity},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`;
+    // const URL = `https://api.openweathermap.org/data/2.5/weather?q=${defaultCity},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`;
+    const URL = `https://api.openweathermap.org/data/2.5/weather?lat=${coord.lat}&lon=${coord.lon}&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`;
+    const URL_THREE_HOUR = `https://api.openweathermap.org/data/2.5/forecast?lat=${coord.lat}&lon=${coord.lon}&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`;
     const URL_AWS_IMAGE = `https://r67xjz1uyc.execute-api.ap-northeast-1.amazonaws.com/store/${defaultStore}/image`
 
     // promise.allにする予定
@@ -145,7 +148,11 @@ export default {
     try{
       S3_IMAGE = await $axios.$get(URL_AWS_IMAGE)
     }catch(e){
-      S3_IMAGE = await $axios.$get(URL_AWS_IMAGE+'?date=yesterday')
+      try{
+        S3_IMAGE = await $axios.$get(URL_AWS_IMAGE+'?date=yesterday')
+        }catch(e){
+          S3_IMAGE = {url:"/no-image.png"}
+        }
     }
     return {
       city: {
@@ -155,7 +162,8 @@ export default {
         tempMax: todaysRes.main.temp_max,
         tempMin: todaysRes.main.temp_min,
         main: todaysRes.weather[0].main,
-        icon: todaysRes.weather[0].icon
+        icon: todaysRes.weather[0].icon,
+        coord: todaysRes.coord
       },
       threehoursRes,
       item: {
@@ -179,6 +187,7 @@ export default {
           shopId:'aeon_rifu_2',
           city:'sapporo'
         }],
+      coord:{},
       breadcrumbItems: [],
       S3_IMAGE:{},
       city: {
@@ -188,7 +197,8 @@ export default {
         temp: '',
         tempMin: '',
         tempMax: '',
-        main: ''
+        main: '',
+        coord:{}
       },
       current: {
         timezone: '',
@@ -326,7 +336,11 @@ export default {
       try{
         this.S3_IMAGE = await this.$axios.$get(URL_AWS_IMAGE)
       }catch(e){
+        try{
         this.S3_IMAGE = await this.$axios.$get(URL_AWS_IMAGE+'?date=yesterday')
+        }catch(e){
+          this.S3_IMAGE = {url:"/no-image.png"}
+        }
       }
       this.item = {
         src: this.S3_IMAGE.url
@@ -334,7 +348,7 @@ export default {
     },
 
     async todaysRes(city){
-      const URL = `https://api.openweathermap.org/data/2.5/weather?q=${city},jp&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`
+      const URL = `https://api.openweathermap.org/data/2.5/weather?lat=${this.coord.lat}&lon=${this.coord.lon}&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`
       const todaysRes = await this.$axios.$get(URL)
       this.city = {
           name: todaysRes.name,
