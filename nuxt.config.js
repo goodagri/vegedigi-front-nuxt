@@ -7,6 +7,8 @@ const { API_KEY, COGNITO_USER_POOL_ID, COGNITO_CLIENT_ID, COGNITO_ID_POOL_ID, CO
 export default defineNuxtConfig({
   loading: './components/Loading.vue',
   bridge: false,
+  // ssr: false,
+  // target: 'static',
   privateRuntimeConfig: {
   //   apiKey: API_KEY
   // },
@@ -16,10 +18,10 @@ export default defineNuxtConfig({
   // Global page headers: https://go.nuxtjs.dev/config-head
   },
   head: {
-    titleTemplate: '%s - vededigi',
-    title: 'vededigi',
+    titleTemplate: '%s - digivede web app',
+    title: 'デジベジ',
     htmlAttrs: {
-      lang: 'en'
+      lang: 'ja'
     },
     meta: [
       { charset: 'utf-8' },
@@ -54,12 +56,36 @@ export default defineNuxtConfig({
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/auth-next',
   ],
-
+  router: {
+    middleware: ['auth'],
+  },
+  auth: {
+    redirect: {
+      login: '/auth/login/',
+      logout: '/auth/login',
+      callback: false,
+      home: '/'
+    },
+    watchLoggedIn: true
+    // strategies: {
+    //   cognito: {
+    //     scheme: '@a1ter/nuxt-auth-aws-cognito-scheme/scheme/scheme',
+    //     credentials: {
+    //       userPoolId: process.env.COGNITO_USER_POOL_ID,
+    //       userPoolWebClientId: process.env.COGNITO_CLIENT_ID,
+    //       region: process.env.COGNITO_REGION
+    //     },
+    //     endpoints: {
+    //       user: false,
+    //     }
+    //   }
+    // }
+  },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {},
-
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
@@ -78,7 +104,6 @@ export default defineNuxtConfig({
       }
     }
   },
-
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
   },
