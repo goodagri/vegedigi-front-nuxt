@@ -83,12 +83,37 @@ export default {
       type:Array,
       default: null,
     },
+    userType:{
+      type:String,
+      default:null,
+    }
   },
   data () {
     return {
       menuItems: [],
       drawer:false,
       colSize:"2"
+    }
+  },
+  watch:{
+    userType(val){
+      if(val==="store_manager"){
+        this.menuItems = [{
+        title: '会員一覧',
+        link: '/admin/users/',
+        action: () => {}
+        },
+        {
+        title: 'ログアウト',
+        action: this.logout
+        }]
+        }else{
+        this.menuItems = [
+        {
+        title: 'ログアウト',
+        action: this.logout
+        }]          
+        }
     }
   },
   created() {
@@ -98,12 +123,12 @@ export default {
     //   link: '/admin/stores/floor/',
     //   action: () => {}
     // })
-
+    if(this.userType==="store_manager"){
     this.menuItems.push({
       title: '会員一覧',
       link: '/admin/users/',
       action: () => {}
-    })
+    })}
     // this.menuItems.push({
     //   title: '新規会員登録',
     //   link: '/admin/users/create/',

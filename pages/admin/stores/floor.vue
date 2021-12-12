@@ -1,7 +1,7 @@
 <template>
 
-    <BasePage page-title="売り場状況" :breadcrumb-items="breadcrumbItems">
-    <template #sideMenu>
+    <BasePage page-title="売り場状況" :user-type="userType" :breadcrumb-items="breadcrumbItems">
+    <template v-if="userType==='producer'" #sideMenu>
     <v-col cols="12" sm="12" md="2" lg="2" xl="2" xs="12">
       <v-sheet
         rounded="lg"
@@ -41,6 +41,10 @@
           <v-col>
             <div class="mb-5">
               <h2>{{tenpo}}</h2>
+                    <v-switch
+      v-model="switch1"
+      :label="`userType: ${userType}`"
+    ></v-switch>
               <p class="text-subtitle-1 font-weight-bold">最新の売り場状況</p>
               <v-img
                 max-height="500"
@@ -85,11 +89,18 @@
                     <v-row align="center">
                       <v-col
                         class="text-h2"
-                        cols="8"
+                        cols="6"
                       >
-                        {{ city.temp }}&deg;C
+                        {{ city.temp }}&#8451;
                       </v-col>
-                      <v-col cols="4">
+
+                      <v-col
+                        cols="3"
+                      >
+                        <h4 class="red--text">最高気温{{ city.tempMax }}&#8451;</h4> <h4 class="blue--text">最低気温{{ city.tempMin }}&#8451;</h4>
+                      </v-col>
+
+                      <v-col cols="3">
                         <v-icon large>{{ currentWeather.icon }}</v-icon>
                       </v-col>
                     </v-row>
@@ -159,8 +170,8 @@ export default {
         name: todaysRes.name,
         date: new Date(todaysRes.dt * 1000),
         temp: parseInt(todaysRes.main.temp + 0.5),
-        tempMax: todaysRes.main.temp_max,
-        tempMin: todaysRes.main.temp_min,
+        tempMax: parseInt(todaysRes.main.temp_max + 0.5),
+        tempMin: parseInt(todaysRes.main.temp_min + 0.5),
         main: todaysRes.weather[0].main,
         icon: todaysRes.weather[0].icon,
         coord: todaysRes.coord
@@ -174,6 +185,8 @@ export default {
   },
   data () {
     return {
+      switch1:true,
+      userType:'store_manager',
       tenpo:'イオン利府1',
       // Shops: ['Foo', 'Bar', 'Fizz', 'Buzz'],
       Shops: [
@@ -247,6 +260,16 @@ export default {
       return this.getCurrentDate(this.city.date)
     },
   },
+  watch:{
+    switch1(val){
+      if(val){
+        this.userType = "store_manager"
+      }else{
+        this.userType = "producer"
+      }
+
+    }
+  },
   created() {
     //  for文でthreehoursResのデータをforecastに入れる
     this.getThreeHourRes()
@@ -311,7 +334,7 @@ export default {
           this.forecasts.push({
             day: `${splitDate[1]}/${splitDate[2]} ${splitDate[3]}:${splitDate[4]}`,
             icon: weatherIcon.icon,
-            temp: `${parseInt(this.threehoursRes.list[i].main.temp_max + 0.5)}\xB0/${parseInt(this.threehoursRes.list[i].main.temp_min + 0.5)}\xB0`
+            temp: `${parseInt(this.threehoursRes.list[i].main.temp)}\u2103`
           })
         }
       }      
@@ -350,7 +373,6 @@ export default {
     async todaysRes(coord){
       const URL = `https://api.openweathermap.org/data/2.5/weather?lat=${coord.lat}&lon=${coord.lon}&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`
       const todaysRes = await this.$axios.$get(URL)
-      console.log(todaysRes)
       this.city = {
           name: todaysRes.name,
           date: new Date(todaysRes.dt * 1000),
