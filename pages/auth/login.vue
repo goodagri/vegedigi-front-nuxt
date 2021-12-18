@@ -87,7 +87,6 @@ export default {
     onClickAuthUser() {
       // this.signIn()
       this.onCognitoAuthenticateUser()
-      this.$router.push('/admin/stores/floor')
     },
     async signIn() {
       try {
@@ -107,9 +106,7 @@ export default {
         Password: this.user.password
       }
       // ユーザープールに送るために整形している
-      const authenticationDetails = new AuthenticationDetails(
-        authenticationData
-      )
+      const authenticationDetails = new AuthenticationDetails(authenticationData)
       const poolData = {
         // 1つのユーザープールを別々のアプリで使うこともある。
         // アプリをクライアントID指定で判別する
@@ -121,7 +118,6 @@ export default {
         Username: this.user.email,
         Pool: userPool
       }
-
       // 認証処理
       const cognitoUser = new CognitoUser(userData);
       cognitoUser.authenticateUser(authenticationDetails, {
@@ -131,12 +127,10 @@ export default {
           const accessToken = result.getAccessToken().getJwtToken(); // アクセストークン
           const refreshToken = result.getRefreshToken().getToken(); // 更新トークン
 
-          // 店舗一覧画面にリダイレクトする。
-          // アクセストークンを使って店舗一覧を取得する。
-          // API叩いて表示する
-          sessionStorage.setItem('idToken', idToken)
-          sessionStorage.setItem('accessToken', accessToken)
-          sessionStorage.setItem('refreshToken', refreshToken)
+          // 店舗一覧画面にリダイレクトする。アクセストークンを使って店舗一覧を取得する。
+          localStorage.setItem('idToken', idToken)
+          localStorage.setItem('accessToken', accessToken)
+          localStorage.setItem('refreshToken', refreshToken)
 
           const userInfoList = []
           // accessTokenにはユーザーの属性値が含まれている。その属性値の参照例
@@ -153,13 +147,15 @@ export default {
                 value: r.getValue()
               })
             }
-          // const data = userInfoList.find(d => d.name === 'sub')
-          // const test = data.value
-          // this.$store.commit("changeMessage", test)
+          const data = userInfoList.find(d => d.name === 'sub')
+          console.log('userInfoList', userInfoList)
+          console.log('data', data)
+          const test = data.value
+          console.log('test', test)
+          this.$store.commit("changeMessage", test)
           });
 
-            // 使うかどうかはわからないよ
-            // 以下、認可（認証後のAWSアクセスの権限取得）に関する処理
+            // 以下、認可（認証後のAWSアクセスの権限取得）に関する処理。使うかどうかはわからない。
             AWS.config.region = process.env.COGNITO_REGION
 
             // IDプールを通じたSTSクレデンシャルの取得
@@ -182,7 +178,7 @@ export default {
               } else {
                 // この処理が無事完了した後は、IDプールの権限に基づいて、API Gatewayを介さず直接アクセスさせることも可能になる
                 // example: const s3 = new AWS.S3();
-                console.log('Successfully logged!');
+                this.$router.push('/admin/stores/floor')
               }
             });
 
