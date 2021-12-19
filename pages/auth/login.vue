@@ -60,7 +60,8 @@ export default {
         password: ''
       },
       errors: {},
-      isPasswordHidden: true
+      isPasswordHidden: true,
+      message: ''
     }
   },
   computed: {
@@ -84,102 +85,114 @@ export default {
       this.isPasswordHidden = !this.isPasswordHidden
     },
     onClickAuthUser() {
+      // this.signIn()
       this.onCognitoAuthenticateUser()
-      this.$router.push('/admin/stores/floor')
+    },
+    async signIn() {
+      try {
+        await this.$auth.loginWith('cognito', {
+          data: {
+            Username: this.user.email,
+            Password: this.user.password
+          }
+        })
+      } catch (error) {
+        console.error(error)
+      }
     },
     onCognitoAuthenticateUser () {
       const authenticationData = {
         Username: this.user.email,
         Password: this.user.password
       }
-
       // ユーザープールに送るために整形している
-      const authenticationDetails = new AuthenticationDetails(
-          authenticationData
-      )
+      const authenticationDetails = new AuthenticationDetails(authenticationData)
       const poolData = {
-          // 1つのユーザープールを別々のアプリで使うこともある。
-          // アプリをクライアントID指定で判別する
-          UserPoolId: process.env.COGNITO_USER_POOL_ID, // ユーザープールID
-          ClientId: process.env.COGNITO_CLIENT_ID, // クライアントID
+        // 1つのユーザープールを別々のアプリで使うこともある。
+        // アプリをクライアントID指定で判別する
+        UserPoolId: process.env.COGNITO_USER_POOL_ID, // ユーザープールID
+        ClientId: process.env.COGNITO_CLIENT_ID, // クライアントID
       };
       const userPool = new CognitoUserPool(poolData);
       const userData = {
         Username: this.user.email,
         Pool: userPool
       }
-
       // 認証処理
       const cognitoUser = new CognitoUser(userData);
       cognitoUser.authenticateUser(authenticationDetails, {
-          onSuccess (result) {
-              // 認証完了後の結果確認の例
-              const idToken = result.getIdToken().getJwtToken();          // IDトークン
-              const accessToken = result.getAccessToken().getJwtToken();  // アクセストークン
-              const refreshToken = result.getRefreshToken().getToken();   // 更新トークン
+        onSuccess (result) {
+          // 認証完了後の結果確認の例
+          const idToken = result.getIdToken().getJwtToken(); // IDトークン
+          const accessToken = result.getAccessToken().getJwtToken(); // アクセストークン
+          const refreshToken = result.getRefreshToken().getToken(); // 更新トークン
 
-              // 店舗一覧画面にリダイレクトする。
-              // アクセストークンを使って店舗一覧を取得する。
-              // API叩いて表示する
-              console.log("idToken : " + idToken);
-              console.log("accessToken : " + accessToken);
-              console.log("refreshToken : " + refreshToken);
+          // 店舗一覧画面にリダイレクトする。アクセストークンを使って店舗一覧を取得する。
+          localStorage.setItem('idToken', idToken)
+          localStorage.setItem('accessToken', accessToken)
+          localStorage.setItem('refreshToken', refreshToken)
 
-              // accessTokenにはユーザーの属性値が含まれている。その属性値の参照例
-              cognitoUser.getUserAttributes(function(err, result) {
-                  if (err) {
-                      alert(err.message || JSON.stringify(err));
-                      return;
-                  }
-                  for (let i = 0; i < result.length; i++) {
-                      // ユーザーの分類（ex.生産者 or 店舗管理者）や設計によっては所属店舗IDが含まれるため該当キーの値を何らかの形で取得
-                      // 情報元に店舗情報を表示する
-                      console.log(
-                          'attribute ' + result[i].getName() + ' has value ' + result[i].getValue()
-                      );
-                  }
-              });
+          const userInfoList = []
+          // accessTokenにはユーザーの属性値が含まれている。その属性値の参照例
+          cognitoUser.getUserAttributes(function(err, result) {
+            if (err) {
+              alert(err.message || JSON.stringify(err));
+              return;
+            }
+            for (const r of result) {
+              // ユーザーの分類（生産者or店舗管理者）や所属店舗IDが含まれる。該当キーの値を何らかの形で取得
+              // 情報元に店舗情報を表示する
+              userInfoList.push({
+                name: r.getName(),
+                value: r.getValue()
+              })
+            }
+          const data = userInfoList.find(d => d.name === 'sub')
+          console.log('userInfoList', userInfoList)
+          console.log('data', data)
+          const test = data.value
+          console.log('test', test)
+          this.$store.commit("changeMessage", test)
+          });
 
-              // 使うかどうかはわからないよ
-              // 以下、認可（認証後のAWSアクセスの権限取得）に関する処理
-              AWS.config.region = process.env.COGNITO_REGION
+            // 以下、認可（認証後のAWSアクセスの権限取得）に関する処理。使うかどうかはわからない。
+            AWS.config.region = process.env.COGNITO_REGION
 
-              // IDプールを通じたSTSクレデンシャルの取得
-              const UserPoolId = `cognito-idp.${process.env.COGNITO_REGION}.amazonaws.com/${process.env.COGNITO_USER_POOL_ID}`
-              AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                  // 自身の環境のIDプール情報を入力
-                  IdentityPoolId: process.env.COGNITO_ID_POOL_ID,
-                  Logins: {
-                      // 自身の環境のユーザープール情報を入力
-                      [UserPoolId]: result
-                          .getIdToken()
-                          .getJwtToken(),
-                  },
-              });
+            // IDプールを通じたSTSクレデンシャルの取得
+            const UserPoolId = `cognito-idp.${process.env.COGNITO_REGION}.amazonaws.com/${process.env.COGNITO_USER_POOL_ID}`
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+              // 自身の環境のIDプール情報を入力
+              IdentityPoolId: process.env.COGNITO_ID_POOL_ID,
+              Logins: {
+                // 自身の環境のユーザープール情報を入力
+                [UserPoolId]: result
+                  .getIdToken()
+                  .getJwtToken(),
+              },
+            });
 
-              // STSクレデンシャルの保存・更新
-              AWS.config.credentials.refresh(error => {
-                  if (error) {
-                      console.error(error);
-                  } else {
-                      // この処理が無事完了した後は、IDプールの権限に基づいて、API Gatewayを介さず直接アクセスさせることも可能になる
-                      // example: const s3 = new AWS.S3();
-                      console.log('Successfully logged!');
-                  }
-              });
+            // STSクレデンシャルの保存・更新
+            AWS.config.credentials.refresh(error => {
+              if (error) {
+                console.error(error);
+              } else {
+                // この処理が無事完了した後は、IDプールの権限に基づいて、API Gatewayを介さず直接アクセスさせることも可能になる
+                // example: const s3 = new AWS.S3();
+                this.$router.push('/admin/stores/floor')
+              }
+            });
 
-              // IAM認証等、HTTPリクエスト上、アクセスキー・シークレットアクセスキー情報を取り出す処理が生じた場合は以下処理を参考
-              // AWS.config.credentials.get(function(){
-              //     const accessKeyId = AWS.config.credentials.accessKeyId;
-              //     const secretAccessKey = AWS.config.credentials.secretAccessKey;
-              //     const sessionToken = AWS.config.credentials.sessionToken;
-              // });
-            
-          },
-
-          onFailure (err) {
-              alert(err.message || JSON.stringify(err))
-          },
+            // IAM認証等、HTTPリクエスト上、アクセスキー・シークレットアクセスキー情報を取り出す処理が生じた場合は以下処理を参考
+            // AWS.config.credentials.get(function(){
+            //     const accessKeyId = AWS.config.credentials.accessKeyId;
+            //     const secretAccessKey = AWS.config.credentials.secretAccessKey;
+            //     const sessionToken = AWS.config.credentials.sessionToken;
+            // });
+          
+        },
+        onFailure (err) {
+          alert(err.message || JSON.stringify(err))
+        }
       });
     }
   }
