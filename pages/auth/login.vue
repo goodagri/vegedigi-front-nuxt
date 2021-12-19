@@ -152,7 +152,7 @@ export default {
           console.log('data', data)
           const test = data.value
           console.log('test', test)
-          this.$store.commit("changeMessage", test)
+          // this.$store.commit("changeMessage", test)
           });
 
             // 以下、認可（認証後のAWSアクセスの権限取得）に関する処理。使うかどうかはわからない。
@@ -172,15 +172,22 @@ export default {
             });
 
             // STSクレデンシャルの保存・更新
+            // AWS.config.credentials.refresh(error => {
+            //   if (error) {
+            //     console.error('error',error);
+            //   } else {
+            //     this.$auth.loginWith('local', { data: this.user })
+            //   }
+            // });
             AWS.config.credentials.refresh(error => {
               if (error) {
-                console.error(error);
+                console.error('error',error);
               } else {
-                // この処理が無事完了した後は、IDプールの権限に基づいて、API Gatewayを介さず直接アクセスさせることも可能になる
-                // example: const s3 = new AWS.S3();
-                this.$router.push('/admin/stores/floor')
+                console.log("success")
               }
             });
+            // console.log("this", this.$auth)
+            this.loginUser()
 
             // IAM認証等、HTTPリクエスト上、アクセスキー・シークレットアクセスキー情報を取り出す処理が生じた場合は以下処理を参考
             // AWS.config.credentials.get(function(){
@@ -192,6 +199,9 @@ export default {
         },
         onFailure (err) {
           alert(err.message || JSON.stringify(err))
+        },
+        loginUser () {
+          this.$auth.loginWith('local', { data: this.user })
         }
       });
     }

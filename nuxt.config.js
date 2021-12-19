@@ -60,16 +60,24 @@ export default defineNuxtConfig({
     '@nuxtjs/auth-next',
   ],
   router: {
-    middleware: ['auth'],
+    middleware: ['auth', 'redirect'],
   },
   auth: {
     redirect: {
       login: '/auth/login/',
-      logout: '/auth/login',
+      logout: '/auth/login/',
       callback: false,
-      home: '/'
+      home: '/admin/stores/floor/'
     },
-    watchLoggedIn: true
+    watchLoggedIn: true,
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: 'api/auth/login/', method: 'post' },
+          logout: { url: 'api/auth/logout/', method: 'post' }
+        }
+      }
+    }
     // strategies: {
     //   cognito: {
     //     scheme: '@a1ter/nuxt-auth-aws-cognito-scheme/scheme/scheme',
