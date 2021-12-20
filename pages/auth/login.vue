@@ -1,10 +1,10 @@
 <template>
   <v-app>
     <v-img
-    src="/A_yoko1.svg"
-    max-height="60"
-    max-width="180"
-    class="mt-2 ml-2"
+      src="/A_yoko1.svg"
+      max-height="60"
+      max-width="180"
+      class="mt-2 ml-2"
     />
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6">
@@ -12,12 +12,14 @@
           <AppLogo />
         </div>
         <v-card>
-          <v-card-title class="headline">
-            ログイン
-          </v-card-title>
+          <v-card-title class="headline"> ログイン </v-card-title>
           <v-card-text>
             <v-form>
-              <v-text-field v-model='user.email' label="メールアドレス" :error-messages="errors.email" />
+              <v-text-field
+                v-model="user.email"
+                label="メールアドレス"
+                :error-messages="errors.email"
+              />
               <v-text-field
                 v-model="user.password"
                 label="パスワード"
@@ -37,7 +39,9 @@
               </div> -->
               <v-card-actions>
                 <v-row justify="end">
-                  <v-btn color="success" @click.prevent="onClickAuthUser">ログイン</v-btn>
+                  <v-btn color="success" @click.prevent="signIn"
+                    >ログイン</v-btn
+                  >
                 </v-row>
               </v-card-actions>
             </v-form>
@@ -49,64 +53,70 @@
 </template>
 
 <script>
-import { AuthenticationDetails, CognitoUserPool, CognitoUser  } from 'amazon-cognito-identity-js'
-import AWS from 'aws-sdk'
+import {
+  AuthenticationDetails,
+  CognitoUserPool,
+  CognitoUser,
+} from "amazon-cognito-identity-js";
+import AWS from "aws-sdk";
 
 export default {
-  data () {
+  data() {
     return {
       user: {
-        email: '',
-        password: ''
+        email: "",
+        password: "",
       },
       errors: {},
       isPasswordHidden: true,
-      message: ''
-    }
+      message: "",
+    };
   },
   computed: {
-    passwordInputType () {
+    passwordInputType() {
       if (this.isPasswordHidden) {
-        return 'password'
+        return "password";
       } else {
-        return 'text'
+        return "text";
       }
     },
-    passwordInputTypeIconColor () {
+    passwordInputTypeIconColor() {
       if (this.isPasswordHidden) {
-        return ''
+        return "";
       } else {
-        return 'primary'
+        return "primary";
       }
-    }
+    },
   },
   methods: {
-    switchPasswordInputType () {
-      this.isPasswordHidden = !this.isPasswordHidden
+    switchPasswordInputType() {
+      this.isPasswordHidden = !this.isPasswordHidden;
     },
     onClickAuthUser() {
       // this.signIn()
-      this.onCognitoAuthenticateUser()
+      this.onCognitoAuthenticateUser();
     },
     async signIn() {
       try {
-        await this.$auth.loginWith('cognito', {
+        await this.$auth.loginWith("cognito", {
           data: {
-            Username: this.user.email,
-            Password: this.user.password
-          }
-        })
-      } catch (error) {
-        console.error(error)
-      }
-    },
-    onCognitoAuthenticateUser () {
+            username: this.user.email,
+            password: this.user.password,
+            },
+            });
+            } catch (error) {
+              console.error(error);
+              }
+            },
+    async onCognitoAuthenticateUser() {
       const authenticationData = {
         Username: this.user.email,
-        Password: this.user.password
-      }
+        Password: this.user.password,
+      };
       // ユーザープールに送るために整形している
-      const authenticationDetails = new AuthenticationDetails(authenticationData)
+      const authenticationDetails = new AuthenticationDetails(
+        authenticationData
+      );
       const poolData = {
         // 1つのユーザープールを別々のアプリで使うこともある。
         // アプリをクライアントID指定で判別する
@@ -116,25 +126,25 @@ export default {
       const userPool = new CognitoUserPool(poolData);
       const userData = {
         Username: this.user.email,
-        Pool: userPool
-      }
+        Pool: userPool,
+      };
       // 認証処理
       const cognitoUser = new CognitoUser(userData);
       cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess (result) {
+        onSuccess(result) {
           // 認証完了後の結果確認の例
           const idToken = result.getIdToken().getJwtToken(); // IDトークン
           const accessToken = result.getAccessToken().getJwtToken(); // アクセストークン
           const refreshToken = result.getRefreshToken().getToken(); // 更新トークン
 
           // 店舗一覧画面にリダイレクトする。アクセストークンを使って店舗一覧を取得する。
-          localStorage.setItem('idToken', idToken)
-          localStorage.setItem('accessToken', accessToken)
-          localStorage.setItem('refreshToken', refreshToken)
+          localStorage.setItem("idToken", idToken);
+          localStorage.setItem("accessToken", accessToken);
+          localStorage.setItem("refreshToken", refreshToken);
 
-          const userInfoList = []
+          const userInfoList = [];
           // accessTokenにはユーザーの属性値が含まれている。その属性値の参照例
-          cognitoUser.getUserAttributes(function(err, result) {
+          cognitoUser.getUserAttributes(function (err, result) {
             if (err) {
               alert(err.message || JSON.stringify(err));
               return;
@@ -144,69 +154,64 @@ export default {
               // 情報元に店舗情報を表示する
               userInfoList.push({
                 name: r.getName(),
-                value: r.getValue()
-              })
+                value: r.getValue(),
+              });
             }
-          const data = userInfoList.find(d => d.name === 'sub')
-          console.log('userInfoList', userInfoList)
-          console.log('data', data)
-          const test = data.value
-          console.log('test', test)
-          // this.$store.commit("changeMessage", test)
+            const data = userInfoList.find((d) => d.name === "sub");
+            console.log("userInfoList", userInfoList);
+            console.log("data", data);
+            const test = data.value;
+            console.log("test", test);
+            // this.$store.commit("changeMessage", test)
           });
 
-            // 以下、認可（認証後のAWSアクセスの権限取得）に関する処理。使うかどうかはわからない。
-            AWS.config.region = process.env.COGNITO_REGION
+          // 以下、認可（認証後のAWSアクセスの権限取得）に関する処理。使うかどうかはわからない。
+          AWS.config.region = process.env.COGNITO_REGION;
 
-            // IDプールを通じたSTSクレデンシャルの取得
-            const UserPoolId = `cognito-idp.${process.env.COGNITO_REGION}.amazonaws.com/${process.env.COGNITO_USER_POOL_ID}`
-            AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-              // 自身の環境のIDプール情報を入力
-              IdentityPoolId: process.env.COGNITO_ID_POOL_ID,
-              Logins: {
-                // 自身の環境のユーザープール情報を入力
-                [UserPoolId]: result
-                  .getIdToken()
-                  .getJwtToken(),
-              },
-            });
+          // IDプールを通じたSTSクレデンシャルの取得
+          const UserPoolId = `cognito-idp.${process.env.COGNITO_REGION}.amazonaws.com/${process.env.COGNITO_USER_POOL_ID}`;
+          AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+            // 自身の環境のIDプール情報を入力
+            IdentityPoolId: process.env.COGNITO_ID_POOL_ID,
+            Logins: {
+              // 自身の環境のユーザープール情報を入力
+              [UserPoolId]: result.getIdToken().getJwtToken(),
+            },
+          });
 
-            // STSクレデンシャルの保存・更新
-            // AWS.config.credentials.refresh(error => {
-            //   if (error) {
-            //     console.error('error',error);
-            //   } else {
-            //     this.$auth.loginWith('local', { data: this.user })
-            //   }
-            // });
-            AWS.config.credentials.refresh(error => {
-              if (error) {
-                console.error('error',error);
-              } else {
-                console.log("success")
-              }
-            });
-            // console.log("this", this.$auth)
-            this.loginUser()
+          // STSクレデンシャルの保存・更新
+          // AWS.config.credentials.refresh(error => {
+          //   if (error) {
+          //     console.error('error',error);
+          //   } else {
+          //     this.$auth.loginWith('local', { data: this.user })
+          //   }
+          // });
+          AWS.config.credentials.refresh((error) => {
+            if (error) {
+              console.error("error", error);
+            } else {
+              console.log("success");
+            }
+          });
+          // console.log("this", this.$auth)
+          // this.$auth.loginWith("local", { data: this.user });
 
-            // IAM認証等、HTTPリクエスト上、アクセスキー・シークレットアクセスキー情報を取り出す処理が生じた場合は以下処理を参考
-            // AWS.config.credentials.get(function(){
-            //     const accessKeyId = AWS.config.credentials.accessKeyId;
-            //     const secretAccessKey = AWS.config.credentials.secretAccessKey;
-            //     const sessionToken = AWS.config.credentials.sessionToken;
-            // });
-          
+          // IAM認証等、HTTPリクエスト上、アクセスキー・シークレットアクセスキー情報を取り出す処理が生じた場合は以下処理を参考
+          // AWS.config.credentials.get(function(){
+          //     const accessKeyId = AWS.config.credentials.accessKeyId;
+          //     const secretAccessKey = AWS.config.credentials.secretAccessKey;
+          //     const sessionToken = AWS.config.credentials.sessionToken;
+          // });
         },
-        onFailure (err) {
-          alert(err.message || JSON.stringify(err))
+        onFailure(err) {
+          alert(err.message || JSON.stringify(err));
         },
-        loginUser () {
-          this.$auth.loginWith('local', { data: this.user })
-        }
       });
-    }
-  }
-}
+    await this.$auth.loginWith("local", { data: this.user })
+    },
+  },
+};
 </script>
 <style scoped>
 </style>

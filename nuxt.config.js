@@ -7,8 +7,8 @@ const { API_KEY, COGNITO_USER_POOL_ID, COGNITO_CLIENT_ID, COGNITO_ID_POOL_ID, CO
 export default defineNuxtConfig({
   loading: './components/Loading.vue',
   bridge: false,
-  // ssr: false,
-  // target: 'static',
+  ssr: false,
+  target: 'static',
   privateRuntimeConfig: {
   //   apiKey: API_KEY
   // },
@@ -71,12 +71,23 @@ export default defineNuxtConfig({
     },
     watchLoggedIn: true,
     strategies: {
-      local: {
+      // local: {
+      //   endpoints: {
+      //     login: { url: '/auth/login/', method: 'post' },
+      //     logout: { url: '/auth/logout/', method: 'post' }
+      //   }
+      // }
+      cognito: {
+        scheme: '@a1ter/nuxt-auth-aws-cognito-scheme/scheme/scheme',
+        credentials: {
+          userPoolId: process.env.COGNITO_USER_POOL_ID,
+          userPoolWebClientId: process.env.COGNITO_CLIENT_ID,
+          region: process.env.COGNITO_REGION
+        },
         endpoints: {
-          login: { url: 'api/auth/login/', method: 'post' },
-          logout: { url: 'api/auth/logout/', method: 'post' }
-        }
-      }
+          user: false,
+        },
+      },
     }
     // strategies: {
     //   cognito: {
