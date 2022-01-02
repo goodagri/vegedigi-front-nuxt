@@ -1,6 +1,9 @@
 <template>
-
-    <BasePage page-title="売り場状況" :user-type="userType" :breadcrumb-items="breadcrumbItems">
+    <BasePage
+      page-title="売り場状況"
+      :user-type="userType"
+      :breadcrumb-items="breadcrumbItems"
+    >
     <template v-if="userType==='producer'" #sideMenu>
     <v-col cols="12" sm="12" md="2" lg="2" xl="2" xs="12">
       <v-sheet
@@ -18,14 +21,7 @@
                 solo
                 return-object
                 @input="SelectShop"
-              ></v-select>
-
-              <!-- 売上グラフ
-              <v-select
-                :items="Shops"
-                label="店舗選択"
-                solo
-              ></v-select> -->
+              />
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -51,15 +47,6 @@
                 contain
                 :src="item.src"
               ></v-img>              
-              <!-- <v-carousel>
-                <v-carousel-item
-                  v-for="(item,i) in items"
-                  :key="i"
-                  :src="item.src"
-                  reverse-transition="fade-transition"
-                  transition="fade-transition"
-                ></v-carousel-item>
-              </v-carousel> -->
             </div>
 
             <div class="mb-5">
@@ -134,6 +121,8 @@
 </template>
 
 <script>
+// import { AuthenticationDetails, CognitoUserPool, CognitoUser  } from 'amazon-cognito-identity-js'
+// import AWS from 'aws-sdk'
 import BasePage from '@/components/BasePage'
 export default {
   components: {
