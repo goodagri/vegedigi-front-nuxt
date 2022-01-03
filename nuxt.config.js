@@ -7,7 +7,7 @@ const { API_KEY, COGNITO_USER_POOL_ID, COGNITO_CLIENT_ID, COGNITO_ID_POOL_ID, CO
 export default defineNuxtConfig({
   loading: './components/Loading.vue',
   bridge: false,
-  ssr: false,
+  // ssr: false,
   target: 'static',
   privateRuntimeConfig: {
   //   apiKey: API_KEY
