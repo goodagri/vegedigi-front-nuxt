@@ -2,7 +2,7 @@
 <v-app>
 
   <v-navigation-drawer v-model="drawer" bottom clipped app>
-    <NaviMenu class="navimenu-area"></NaviMenu>
+    <NaviMenu class="navimenu-area" />
   </v-navigation-drawer>
   
 
@@ -123,30 +123,25 @@ export default {
     //   link: '/admin/stores/floor/',
     //   action: () => {}
     // })
+    //  管理者
     if(this.userType==="store_manager"){
     this.menuItems.push({
       title: '会員一覧',
       link: '/admin/users/',
       action: () => {}
     })}
-    // this.menuItems.push({
-    //   title: '新規会員登録',
-    //   link: '/admin/users/create/',
-    //   action: () => {}
-    // })
-    //  管理者
     // if (this.$auth.user.is_superuser) {
-    //   this.menuItems.push({
-    //     title: '新規会員登録',
-    //     link: '/admin/users/',
-    //     action: () => {}
-    //   })
+      // this.menuItems.push({
+      //   title: '新規会員登録',
+      //   link: '/admin/users/',
+      //   action: () => {}
+      // })
+      // this.menuItems.push({
+      //   title: '会員情報変更',
+      //   link: '/admin/users/update/',
+      //   action: () => {}
+      // })
     // }
-    // this.menuItems.push({
-    //   title: '会員情報変更',
-    //   link: '/admin/users/update/',
-    //   action: () => {}
-    // })
     this.menuItems.push({
       title: 'ログアウト',
       action: this.logout
@@ -154,15 +149,14 @@ export default {
   },
   methods: {
     logout() {
-      this.$router.push('/auth/login')
-    },
-    // logout () {
-    //   this.$auth.logout().then(() => {
-    //     this.$router.push('/auth/login/')
-    //   }).catch((err) => {
-    //     console.log(err)
-    //   })
-    // }
+      // this.$router.push('/auth/login')
+      this.$auth.logout()
+      .then(() => {
+        this.$router.push('/auth/login')
+      }).catch((err) => {
+        console.log('error', err)
+      })
+    }
   }
 }
 </script>

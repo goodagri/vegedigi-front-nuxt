@@ -1,6 +1,9 @@
 <template>
-
-    <BasePage page-title="売り場状況" :user-type="userType" :breadcrumb-items="breadcrumbItems">
+    <BasePage
+      page-title="売り場状況"
+      :user-type="userType"
+      :breadcrumb-items="breadcrumbItems"
+    >
     <template v-if="userType==='producer'" #sideMenu>
     <v-col cols="12" sm="12" md="2" lg="2" xl="2" xs="12">
       <v-sheet
@@ -18,14 +21,7 @@
                 solo
                 return-object
                 @input="SelectShop"
-              ></v-select>
-
-              <!-- 売上グラフ
-              <v-select
-                :items="Shops"
-                label="店舗選択"
-                solo
-              ></v-select> -->
+              />
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -46,84 +42,26 @@
       :label="`userType: ${userType}`"
     ></v-switch>
               <p class="text-subtitle-1 font-weight-bold">最新の売り場状況</p>
-              <v-img
-                max-height="500"
-                contain
-                :src="item.src"
-              ></v-img>              
-              <!-- <v-carousel>
-                <v-carousel-item
-                  v-for="(item,i) in items"
-                  :key="i"
-                  :src="item.src"
-                  reverse-transition="fade-transition"
-                  transition="fade-transition"
-                ></v-carousel-item>
-              </v-carousel> -->
+              <StoreImage
+                :item="item"
+              ></StoreImage>
             </div>
 
             <div class="mb-5">
               <p class="text-subtitle-1 font-weight-bold">野菜の量</p>
-              <v-card>
-                <v-card-text>{{ storeStatus.latestTime }}</v-card-text>
-                <v-card-text>{{ storeStatus.manyVegetable }}</v-card-text>
-                <v-card-text>{{ storeStatus.wellVegetable }}</v-card-text>
-              </v-card>
+              <VegeAmount
+                :store-status="storeStatus"
+              ></VegeAmount>
             </div>
 
             <div class="mb-5">
               <p class="text-subtitle-1 font-weight-bold">天気情報</p>
-              <v-card>
-                <!-- 取得都市,現在時刻,現在の天気 -->
-                <v-list-item two-line>
-                  <v-list-item-content>
-                    <v-list-item-title class="text-h5">
-                      {{ city.name }}
-                    </v-list-item-title>
-                    <v-list-item-subtitle>{{ currentDate }}, {{ currentWeather.word }}</v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
-
-                <!-- 現在の温度と天気アイコン -->
-                <v-card-text>
-                    <v-row align="center">
-                      <v-col
-                        class="text-h2"
-                        cols="6"
-                      >
-                        {{ city.temp }}&#8451;
-                      </v-col>
-
-                      <v-col
-                        cols="3"
-                      >
-                        <h4 class="red--text">最高気温{{ city.tempMax }}&#8451;</h4> <h4 class="blue--text">最低気温{{ city.tempMin }}&#8451;</h4>
-                      </v-col>
-
-                      <v-col cols="3">
-                        <v-icon large>{{ currentWeather.icon }}</v-icon>
-                      </v-col>
-                    </v-row>
-                  </v-card-text>
-
-                  <v-list class="transparent">
-                    <v-list-item
-                      v-for="forecast in forecasts"
-                      :key="forecast.day"
-                    >
-                      <v-list-item-title>{{ forecast.day }}</v-list-item-title>
-              
-                      <v-list-item-icon>
-                        <v-icon>{{ forecast.icon }}</v-icon>
-                      </v-list-item-icon>
-              
-                      <v-list-item-subtitle class="text-right">
-                        {{ forecast.temp }}
-                      </v-list-item-subtitle>
-                      <v-divider></v-divider>
-                    </v-list-item>
-                  </v-list>
-              </v-card>
+              <Weather
+                :city="city"
+                :forecasts="forecasts"
+                :current-weather="currentWeather"
+                :current-date="currentDate"
+              ></Weather>
             </div>
 
           </v-col>
@@ -134,6 +72,8 @@
 </template>
 
 <script>
+// import { AuthenticationDetails, CognitoUserPool, CognitoUser  } from 'amazon-cognito-identity-js'
+// import AWS from 'aws-sdk'
 import BasePage from '@/components/BasePage'
 export default {
   components: {
@@ -388,6 +328,21 @@ export default {
     async get3h(coord){
       const URL_THREE_HOUR = `https://api.openweathermap.org/data/2.5/forecast?lat=${coord.lat}&lon=${coord.lon}&units=metric&lang=ja&exclude=hourly,daily&appid=${process.env.API_KEY}`
       this.threehoursRes = await this.$axios.$get(URL_THREE_HOUR)
+    },
+    async getGraphQL(){
+      const url = "https://hintnedgcfhvrcgxefmogqwctu.appsync-api.ap-northeast-1.amazonaws.com/graphql"
+      const que = "{getStoreInfoForWeb(id: \"AE01-Wb5qCH\") {lat,live_msg,long},getLatestStoreImgs(id: \"AE01-Wb5qCH\") {sensor_id,url}}"
+      const header = {
+        "Content-Type": "application/graphql",
+        "Authorization": "eyJraWQiOiJ6VHN2U2RROTd3VEptSjR4d2tpZURqbFB6blFQQTU1RlF1bktsOHlxVGJzPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIxZTBlMWZiMy1mYjFhLTRlZTQtOTQ5ZS02MjQ3ZjNkMmMyMDIiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImN1c3RvbTpzdG9yZV9pZHMiOiJhZW9uX3JpZnVfMSxhZW9uX3JpZnVfMiIsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1ub3J0aGVhc3QtMS5hbWF6b25hd3MuY29tXC9hcC1ub3J0aGVhc3QtMV9hRGJMd0dRUEwiLCJjb2duaXRvOnVzZXJuYW1lIjoiMWUwZTFmYjMtZmIxYS00ZWU0LTk0OWUtNjI0N2YzZDJjMjAyIiwib3JpZ2luX2p0aSI6ImMzMTU5YWQyLTk3N2UtNGY5ZC05NDhjLThjMTIzMzI4MGQwNSIsImF1ZCI6IjNvZDlmajlvZjk2ZjVxdTdzY3J0YXY3amxlIiwiZXZlbnRfaWQiOiIwYTZhNzBiZi05YjkyLTRhNDgtODZhNC1iNWI4YTM5ZThmMTciLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzOTg0MDI5NiwiZXhwIjoxNjM5ODQwODk2LCJjdXN0b206dXNlcl90eXBlIjoicHJvZHVjZXIiLCJpYXQiOjE2Mzk4NDAyOTYsImp0aSI6IjdhY2RjYTExLTU1N2YtNGUzMC04ZTc3LTg1YzIxMjRjYzdmMyIsImVtYWlsIjoia29taWNvb2wxNEBob3RtYWlsLmNvLmpwIn0.KEw8aiIrX5ZY1ADolTzVvRUBiYT15kMgWNtsMBYbf9IjUY69NDQtkvJC26BxV52WxP_ooKSGPR1BHWn7Rkws11DBYJPOoNx50mnmGabq57noJy2feJtTlU3jtyhq5xJkFse2V9B_OkTcM_KgB76slSs02CKXOOAmstGsxQfvlEJQLzzlEKi3mf-2Ykp5G6ApedE3Apz-nO8If57oQzx7R9sO4pMxbzg79xEpLPlsLF747V_s2BFQk60P321HZlYAxtVEzPJD-8iqtEgAVsG2UV80ul6TDAQ8q0DTdnA8rdUDHrm5-YhNIlr4XdesXsTxY_lpDekDFKmALQD6ZUfVWQ"
+        }
+
+      const resp = await this.$axios.$post(url, {
+        query: que
+      }, {
+        headers: header
+      })
+      console.log(resp.data)
     }
   }
 }

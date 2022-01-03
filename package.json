@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@a1ter/nuxt-auth-aws-cognito-scheme": "^0.0.12",
-    "@nuxtjs/auth-next": "5.0.0-1637745161.ea53f98",
+    "@nuxtjs/auth-next": "5.0.0-1640716105.da0587d",
     "@nuxtjs/axios": "^5.13.6",
     "amazon-cognito-identity-js": "^5.2.3",
     "aws-sdk": "^2.1028.0",
