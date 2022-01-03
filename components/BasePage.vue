@@ -149,10 +149,9 @@ export default {
   },
   methods: {
     logout() {
-      // this.$router.push('/auth/login')
       this.$auth.logout()
       .then(() => {
-        this.$router.push('/auth/login')
+        this.$router.push('/login')
       }).catch((err) => {
         console.log('error', err)
       })

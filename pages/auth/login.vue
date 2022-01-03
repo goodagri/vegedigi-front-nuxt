@@ -12,7 +12,7 @@
           <AppLogo />
         </div>
         <v-card>
-          <v-card-title class="headline"> ログイン </v-card-title>
+          <v-card-title class="headline">ログイン</v-card-title>
           <v-card-text>
             <v-form>
               <v-text-field
@@ -36,9 +36,12 @@
               </v-text-field>
               <v-card-actions>
                 <v-row justify="end">
-                  <v-btn color="success" @click.prevent="signIn"
-                    >ログイン</v-btn
+                  <v-btn
+                    color="success"
+                    @click.prevent="signIn"
                   >
+                    ログイン
+                  </v-btn>
                 </v-row>
               </v-card-actions>
             </v-form>
@@ -54,8 +57,8 @@ import {
   AuthenticationDetails,
   CognitoUserPool,
   CognitoUser,
-} from "amazon-cognito-identity-js";
-import AWS from "aws-sdk";
+} from "amazon-cognito-identity-js"
+import AWS from "aws-sdk"
 
 export default {
   data() {

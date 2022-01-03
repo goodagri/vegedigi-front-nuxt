@@ -67,16 +67,10 @@ export default defineNuxtConfig({
     redirect: {
       login: '/login',
       logout: '/login',
-      callback: '/callback',
-      home: '/admin/stores/floor/',
+      callback: false,
+      home: '/',
     },
-    // redirect: {
-    //   login: '/auth/login',
-    //   logout: '/auth/login/',
-    //   callback: false,
-    //   home: '/admin/stores/floor/'
-    // },
-    // watchLoggedIn: true,
+    watchLoggedIn: true,
     strategies: {
       cognito: {
         scheme: '@a1ter/nuxt-auth-aws-cognito-scheme/scheme/scheme',
