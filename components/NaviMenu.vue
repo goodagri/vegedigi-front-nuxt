@@ -75,7 +75,7 @@ export default {
         title: '売り場状況',
         icon: 'mdi-image',
         iconright: 'mdi-chevron-right',
-        link: '/admin/stores/floor/',
+        link: '/',
         action: () => {}
       })
       // this.menuItems.push({
