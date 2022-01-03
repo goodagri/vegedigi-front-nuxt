@@ -16,7 +16,7 @@
           <v-card-text>
             <v-form>
               <v-text-field
-                v-model="user.email"
+                v-model='user.email'
                 label="メールアドレス"
                 :error-messages="errors.email"
               />
@@ -34,9 +34,6 @@
                   mdi-eye-off
                 </v-icon>
               </v-text-field>
-              <!-- <div class="error--text" v-for="(err, index) in errors.non_field_errors" :key="index">
-                {{ err }}
-              </div> -->
               <v-card-actions>
                 <v-row justify="end">
                   <v-btn color="success" @click.prevent="signIn"
@@ -93,50 +90,34 @@ export default {
       this.isPasswordHidden = !this.isPasswordHidden;
     },
     onClickAuthUser() {
-      // this.signIn()
-      this.onCognitoAuthenticateUser();
+
+      this.onCognitoAuthenticateUser()
     },
-    async signIn() {
-      try {
-        await this.$auth.loginWith("cognito", {
-          data: {
-            username: this.user.email,
-            password: this.user.password,
-            },
-            });
-            } catch (error) {
-              console.error(error);
-              }
-            },
-    async onCognitoAuthenticateUser() {
+    onCognitoAuthenticateUser () {
       const authenticationData = {
         Username: this.user.email,
-        Password: this.user.password,
-      };
-      // ユーザープールに送るために整形している
-      const authenticationDetails = new AuthenticationDetails(
-        authenticationData
-      );
+        Password: this.user.password
+      }
+      const authenticationDetails = new AuthenticationDetails(authenticationData) // UserPoolに送るために整形
       const poolData = {
-        // 1つのユーザープールを別々のアプリで使うこともある。
-        // アプリをクライアントID指定で判別する
+        // 1つのユーザープールを別々のアプリで使うこともある。アプリをクライアントID指定で判別する
         UserPoolId: process.env.COGNITO_USER_POOL_ID, // ユーザープールID
         ClientId: process.env.COGNITO_CLIENT_ID, // クライアントID
       };
-      const userPool = new CognitoUserPool(poolData);
+      const userPool = new CognitoUserPool(poolData)
       const userData = {
         Username: this.user.email,
-        Pool: userPool,
-      };
-      // 認証処理
-      const cognitoUser = new CognitoUser(userData);
+
+        Pool: userPool
+      }
+      const cognitoUser = new CognitoUser(userData) // 認証処理
+
       cognitoUser.authenticateUser(authenticationDetails, {
         onSuccess(result) {
           // 認証完了後の結果確認の例
           const idToken = result.getIdToken().getJwtToken(); // IDトークン
           const accessToken = result.getAccessToken().getJwtToken(); // アクセストークン
           const refreshToken = result.getRefreshToken().getToken(); // 更新トークン
-
           // 店舗一覧画面にリダイレクトする。アクセストークンを使って店舗一覧を取得する。
           localStorage.setItem("idToken", idToken);
           localStorage.setItem("accessToken", accessToken);
@@ -146,7 +127,7 @@ export default {
           // accessTokenにはユーザーの属性値が含まれている。その属性値の参照例
           cognitoUser.getUserAttributes(function (err, result) {
             if (err) {
-              alert(err.message || JSON.stringify(err));
+              alert(err.message || JSON.stringify(err))
               return;
             }
             for (const r of result) {
@@ -157,61 +138,44 @@ export default {
                 value: r.getValue(),
               });
             }
-            const data = userInfoList.find((d) => d.name === "sub");
-            console.log("userInfoList", userInfoList);
-            console.log("data", data);
-            const test = data.value;
-            console.log("test", test);
-            // this.$store.commit("changeMessage", test)
+          const data = userInfoList.find(d => d.name === 'sub')
+          console.log('userInfoList', userInfoList)
+          console.log('data', data)
+          const test = data.value
+          console.log('test', test)
           });
 
           // 以下、認可（認証後のAWSアクセスの権限取得）に関する処理。使うかどうかはわからない。
           AWS.config.region = process.env.COGNITO_REGION;
 
-          // IDプールを通じたSTSクレデンシャルの取得
-          const UserPoolId = `cognito-idp.${process.env.COGNITO_REGION}.amazonaws.com/${process.env.COGNITO_USER_POOL_ID}`;
-          AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            // 自身の環境のIDプール情報を入力
-            IdentityPoolId: process.env.COGNITO_ID_POOL_ID,
-            Logins: {
-              // 自身の環境のユーザープール情報を入力
-              [UserPoolId]: result.getIdToken().getJwtToken(),
-            },
-          });
-
-          // STSクレデンシャルの保存・更新
-          // AWS.config.credentials.refresh(error => {
-          //   if (error) {
-          //     console.error('error',error);
-          //   } else {
-          //     this.$auth.loginWith('local', { data: this.user })
-          //   }
-          // });
-          AWS.config.credentials.refresh((error) => {
-            if (error) {
-              console.error("error", error);
-            } else {
-              console.log("success");
-            }
-          });
-          // console.log("this", this.$auth)
-          // this.$auth.loginWith("local", { data: this.user });
-
-          // IAM認証等、HTTPリクエスト上、アクセスキー・シークレットアクセスキー情報を取り出す処理が生じた場合は以下処理を参考
-          // AWS.config.credentials.get(function(){
-          //     const accessKeyId = AWS.config.credentials.accessKeyId;
-          //     const secretAccessKey = AWS.config.credentials.secretAccessKey;
-          //     const sessionToken = AWS.config.credentials.sessionToken;
-          // });
+            // IDプールを通じたSTSクレデンシャルの取得
+            const UserPoolId = `cognito-idp.${process.env.COGNITO_REGION}.amazonaws.com/${process.env.COGNITO_USER_POOL_ID}`
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+              // 自身の環境のIDプール情報を入力
+              IdentityPoolId: process.env.COGNITO_ID_POOL_ID,
+              Logins: {
+                // 自身の環境のユーザープール情報を入力
+                [UserPoolId]: result
+                  .getIdToken()
+                  .getJwtToken(),
+              },
+            })
+            AWS.config.credentials.refresh(error => {
+              if (error) {
+                console.error('error',error)
+              } else {
+                console.log("success")
+              }
+            });
         },
-        onFailure(err) {
-          alert(err.message || JSON.stringify(err));
-        },
-      });
-    await this.$auth.loginWith("local", { data: this.user })
+      })
+      this.signIn()
     },
-  },
-};
+    onFailure (err) {
+      alert(err.message || JSON.stringify(err))
+    }
+  }
+}
 </script>
 <style scoped>
 </style>

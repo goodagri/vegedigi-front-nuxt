@@ -52,12 +52,16 @@ export default {
       type:Object,
       default: null,
     },
-    weather: {
+    currentWeather: {
       type:Object,
       default: null,
     },
     forecasts:{
       type:Array,
+      default:null,
+    },
+    currentDate:{
+      type:String,
       default:null,
     }
   },

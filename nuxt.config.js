@@ -2,7 +2,8 @@ import colors from 'vuetify/es5/util/colors'
 import { defineNuxtConfig } from '@nuxt/bridge'
 import dotenv from 'dotenv'
 dotenv.config();
-const { API_KEY, COGNITO_USER_POOL_ID, COGNITO_CLIENT_ID, COGNITO_ID_POOL_ID, COGNITO_REGION } = process.env;
+// const { API_KEY } = process.env;
+const { API_KEY } = process.env;
 
 export default defineNuxtConfig({
   loading: './components/Loading.vue',
@@ -60,23 +61,23 @@ export default defineNuxtConfig({
     '@nuxtjs/auth-next',
   ],
   router: {
-    middleware: ['auth', 'redirect'],
+    middleware: ['auth'],
   },
   auth: {
     redirect: {
-      login: '/auth/login/',
-      logout: '/auth/login/',
-      callback: false,
-      home: '/admin/stores/floor/'
+      login: '/login',
+      logout: '/login',
+      callback: '/callback',
+      home: '/admin/stores/floor/',
     },
-    watchLoggedIn: true,
+    // redirect: {
+    //   login: '/auth/login',
+    //   logout: '/auth/login/',
+    //   callback: false,
+    //   home: '/admin/stores/floor/'
+    // },
+    // watchLoggedIn: true,
     strategies: {
-      // local: {
-      //   endpoints: {
-      //     login: { url: '/auth/login/', method: 'post' },
-      //     logout: { url: '/auth/logout/', method: 'post' }
-      //   }
-      // }
       cognito: {
         scheme: '@a1ter/nuxt-auth-aws-cognito-scheme/scheme/scheme',
         credentials: {
@@ -86,25 +87,14 @@ export default defineNuxtConfig({
         },
         endpoints: {
           user: false,
-        },
-      },
+        }
+      }
     }
-    // strategies: {
-    //   cognito: {
-    //     scheme: '@a1ter/nuxt-auth-aws-cognito-scheme/scheme/scheme',
-    //     credentials: {
-    //       userPoolId: process.env.COGNITO_USER_POOL_ID,
-    //       userPoolWebClientId: process.env.COGNITO_CLIENT_ID,
-    //       region: process.env.COGNITO_REGION
-    //     },
-    //     endpoints: {
-    //       user: false,
-    //     }
-    //   }
-    // }
   },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {},
+  axios: {
+    baseURL: process.env.BASE_API_URL
+  },
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
@@ -125,12 +115,16 @@ export default defineNuxtConfig({
   },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    transpile: ['@nuxtjs/auth-next']
   },
+  // env: {
+  //   API_KEY,
+  //   COGNITO_USER_POOL_ID,
+  //   COGNITO_CLIENT_ID,
+  //   COGNITO_ID_POOL_ID,
+  //   COGNITO_REGION
+  // },
   env: {
-    API_KEY,
-    COGNITO_USER_POOL_ID,
-    COGNITO_CLIENT_ID,
-    COGNITO_ID_POOL_ID,
-    COGNITO_REGION
+    API_KEY
   }
 })

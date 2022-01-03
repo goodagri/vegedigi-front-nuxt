@@ -1,6 +1,9 @@
 <template>
-
-    <BasePage page-title="売り場状況" :user-type="userType" :breadcrumb-items="breadcrumbItems">
+    <BasePage
+      page-title="売り場状況"
+      :user-type="userType"
+      :breadcrumb-items="breadcrumbItems"
+    >
     <template v-if="userType==='producer'" #sideMenu>
     <v-col cols="12" sm="12" md="2" lg="2" xl="2" xs="12">
       <v-sheet
@@ -18,14 +21,7 @@
                 solo
                 return-object
                 @input="SelectShop"
-              ></v-select>
-
-              <!-- 売上グラフ
-              <v-select
-                :items="Shops"
-                label="店舗選択"
-                solo
-              ></v-select> -->
+              />
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -46,84 +42,26 @@
       :label="`userType: ${userType}`"
     ></v-switch>
               <p class="text-subtitle-1 font-weight-bold">最新の売り場状況</p>
-              <v-img
-                max-height="500"
-                contain
-                :src="item.src"
-              ></v-img>              
-              <!-- <v-carousel>
-                <v-carousel-item
-                  v-for="(item,i) in items"
-                  :key="i"
-                  :src="item.src"
-                  reverse-transition="fade-transition"
-                  transition="fade-transition"
-                ></v-carousel-item>
-              </v-carousel> -->
+              <StoreImage
+                :item="item"
+              ></StoreImage>
             </div>
 
             <div class="mb-5">
               <p class="text-subtitle-1 font-weight-bold">野菜の量</p>
-              <v-card>
-                <v-card-text>{{ storeStatus.latestTime }}</v-card-text>
-                <v-card-text>{{ storeStatus.manyVegetable }}</v-card-text>
-                <v-card-text>{{ storeStatus.wellVegetable }}</v-card-text>
-              </v-card>
+              <VegeAmount
+                :store-status="storeStatus"
+              ></VegeAmount>
             </div>
 
             <div class="mb-5">
               <p class="text-subtitle-1 font-weight-bold">天気情報</p>
-              <v-card>
-                <!-- 取得都市,現在時刻,現在の天気 -->
-                <v-list-item two-line>
-                  <v-list-item-content>
-                    <v-list-item-title class="text-h5">
-                      {{ city.name }}
-                    </v-list-item-title>
-                    <v-list-item-subtitle>{{ currentDate }}, {{ currentWeather.word }}</v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
-
-                <!-- 現在の温度と天気アイコン -->
-                <v-card-text>
-                    <v-row align="center">
-                      <v-col
-                        class="text-h2"
-                        cols="6"
-                      >
-                        {{ city.temp }}&#8451;
-                      </v-col>
-
-                      <v-col
-                        cols="3"
-                      >
-                        <h4 class="red--text">最高気温{{ city.tempMax }}&#8451;</h4> <h4 class="blue--text">最低気温{{ city.tempMin }}&#8451;</h4>
-                      </v-col>
-
-                      <v-col cols="3">
-                        <v-icon large>{{ currentWeather.icon }}</v-icon>
-                      </v-col>
-                    </v-row>
-                  </v-card-text>
-
-                  <v-list class="transparent">
-                    <v-list-item
-                      v-for="forecast in forecasts"
-                      :key="forecast.day"
-                    >
-                      <v-list-item-title>{{ forecast.day }}</v-list-item-title>
-              
-                      <v-list-item-icon>
-                        <v-icon>{{ forecast.icon }}</v-icon>
-                      </v-list-item-icon>
-              
-                      <v-list-item-subtitle class="text-right">
-                        {{ forecast.temp }}
-                      </v-list-item-subtitle>
-                      <v-divider></v-divider>
-                    </v-list-item>
-                  </v-list>
-              </v-card>
+              <Weather
+                :city="city"
+                :forecasts="forecasts"
+                :current-weather="currentWeather"
+                :current-date="currentDate"
+              ></Weather>
             </div>
 
           </v-col>
@@ -134,6 +72,8 @@
 </template>
 
 <script>
+// import { AuthenticationDetails, CognitoUserPool, CognitoUser  } from 'amazon-cognito-identity-js'
+// import AWS from 'aws-sdk'
 import BasePage from '@/components/BasePage'
 export default {
   components: {
