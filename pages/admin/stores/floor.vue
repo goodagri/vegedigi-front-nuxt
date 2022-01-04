@@ -225,7 +225,8 @@ export default {
         manyVegetable: dummyTextArray[3],
         wellVegetable: dummyTextArray[4]
       };
-
+    console.log("-----------")
+    console.log(this.$auth.user)
     };
   },
   methods: {
@@ -330,8 +331,9 @@ export default {
       this.threehoursRes = await this.$axios.$get(URL_THREE_HOUR)
     },
     async getGraphQL(){
+
       const url = "https://hintnedgcfhvrcgxefmogqwctu.appsync-api.ap-northeast-1.amazonaws.com/graphql"
-      const que = "{getStoreInfoForWeb(id: \"AE01-Wb5qCH\") {lat,live_msg,long},getLatestStoreImgs(id: \"AE01-Wb5qCH\") {sensor_id,url}}"
+      const que = "{getStoreOverview(id: \"AE01-Wb5qCH\") {live_msg,current_weather{dt,temp,temp_max,temp_min,weather,icon},weather_forecasts{dt,temp,temp_max,temp_min,weather,icon}},getLatestStoreImgs(id: \"AE01-Wb5qCH\") {sensor_id,url}}"
       const header = {
         "Content-Type": "application/graphql",
         "Authorization": "eyJraWQiOiJ6VHN2U2RROTd3VEptSjR4d2tpZURqbFB6blFQQTU1RlF1bktsOHlxVGJzPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIxZTBlMWZiMy1mYjFhLTRlZTQtOTQ5ZS02MjQ3ZjNkMmMyMDIiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImN1c3RvbTpzdG9yZV9pZHMiOiJhZW9uX3JpZnVfMSxhZW9uX3JpZnVfMiIsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1ub3J0aGVhc3QtMS5hbWF6b25hd3MuY29tXC9hcC1ub3J0aGVhc3QtMV9hRGJMd0dRUEwiLCJjb2duaXRvOnVzZXJuYW1lIjoiMWUwZTFmYjMtZmIxYS00ZWU0LTk0OWUtNjI0N2YzZDJjMjAyIiwib3JpZ2luX2p0aSI6ImMzMTU5YWQyLTk3N2UtNGY5ZC05NDhjLThjMTIzMzI4MGQwNSIsImF1ZCI6IjNvZDlmajlvZjk2ZjVxdTdzY3J0YXY3amxlIiwiZXZlbnRfaWQiOiIwYTZhNzBiZi05YjkyLTRhNDgtODZhNC1iNWI4YTM5ZThmMTciLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzOTg0MDI5NiwiZXhwIjoxNjM5ODQwODk2LCJjdXN0b206dXNlcl90eXBlIjoicHJvZHVjZXIiLCJpYXQiOjE2Mzk4NDAyOTYsImp0aSI6IjdhY2RjYTExLTU1N2YtNGUzMC04ZTc3LTg1YzIxMjRjYzdmMyIsImVtYWlsIjoia29taWNvb2wxNEBob3RtYWlsLmNvLmpwIn0.KEw8aiIrX5ZY1ADolTzVvRUBiYT15kMgWNtsMBYbf9IjUY69NDQtkvJC26BxV52WxP_ooKSGPR1BHWn7Rkws11DBYJPOoNx50mnmGabq57noJy2feJtTlU3jtyhq5xJkFse2V9B_OkTcM_KgB76slSs02CKXOOAmstGsxQfvlEJQLzzlEKi3mf-2Ykp5G6ApedE3Apz-nO8If57oQzx7R9sO4pMxbzg79xEpLPlsLF747V_s2BFQk60P321HZlYAxtVEzPJD-8iqtEgAVsG2UV80ul6TDAQ8q0DTdnA8rdUDHrm5-YhNIlr4XdesXsTxY_lpDekDFKmALQD6ZUfVWQ"
