@@ -9,13 +9,13 @@
       <v-sheet rounded="lg">
         <v-row class="align-baseline">
           <v-col>
-            売り場状況
-          </v-col>
-          <v-col>
             <v-select
               label="店舗選択"
               outlined
               return-object
+              :items="storesInfo"
+              item-text="storeName"
+              @input="SelectShop"
             />
           </v-col>
         </v-row>
@@ -32,18 +32,22 @@
           <v-img
             max-height="500"
             contain
-            :src="item.src"
+            :src="images[0].url"
           />
         </v-col>
         <v-col cols="12" class="mb-5">
           <p class="text-subtitle-1 font-weight-bold">野菜の量</p>
-          <!-- <VegetableAmount /> -->
           <v-card>
-            <v-card-text>{{ dummyText }}</v-card-text>
+            <v-card-text>{{ liveText }}</v-card-text>
           </v-card>
         </v-col>
         <v-col  cols="12" class="mb-5">
           <p class="text-subtitle-1 font-weight-bold">天気情報</p>
+            <Weather
+              :forecasts="forecasts"
+              :current-weather="currentWeather"
+              :store-name="storeName"
+            ></Weather>
           <!-- <Weather /> -->
         </v-col>
       </v-row>
@@ -66,25 +70,42 @@ export default {
     // StoreImage,
     // Weather
   },
+  async asyncData(context){
+      const storeids = context.$auth.user.cognito.storeids
+      const usertype = context.$auth.user.cognito.usertype
+      const storenames = ["店舗1","店舗2"]
+      const url = "https://hintnedgcfhvrcgxefmogqwctu.appsync-api.ap-northeast-1.amazonaws.com/graphql"
+      const stores = []
+      for(let i = 0; i < storeids.length; i++ ){
+        stores.push({storeName:storenames[i],storeId:storeids[i]})
+      }
+      const que = `{getStoreOverview(id: "${stores[0].storeId}") {live_msg,current_weather{dt,temp,temp_max,temp_min,weather,icon},weather_forecasts{dt,temp,temp_max,temp_min,weather,icon}},getLatestStoreImgs(id: "${stores[0].storeId}") {sensor_id,url}}`
+      const header = {
+        "Content-Type": "application/graphql",
+        "Authorization": context.$auth.strategy.token.session.idToken.jwtToken
+        }
+
+      const resp = await context.$axios.$post(url, {
+        query: que
+      }, {
+        headers: header
+      })
+    
+    return{
+      storeName:storenames[0],
+      userType: usertype,
+      storesInfo: stores,
+      images: resp.data.getLatestStoreImgs,
+      liveText: resp.data.getStoreOverview.live_msg,
+      currentWeather: resp.data.getStoreOverview.current_weather,
+      forecasts: resp.data.getStoreOverview.weather_forecasts
+
+    }
+  },
   data () {
     return {
       breadcrumbItems: [],
       storeName:'イオン利府1',
-      Shops: [
-        {
-          shopName:'イオン利府1',
-          shopId:'aeon_rifu_1',
-          coord:{lon:'139.768889',lat:'35.676111'}
-        },
-        {
-          shopName:'イオン利府2',
-          shopId:'aeon_rifu_2',
-          coord:{lon:'135.780833',lat:'35.026111'}
-        }],
-      S3_IMAGE:{},
-      dummyText: '_/_/_/_/_/_/_/_/ 10:00 野菜状況 _/_/_/_/_/_/_/_/\n\n売り場状況報告です。 東京駅 09月05日\n売場にたくさん並んでいるものは、シイタケ トマト です。\n全体的に動きは鈍いです。\n引き続きご出荷お待ちしております。\n下記のURLから売場の状況写真はこちらから見ることができます。',
-      item: {},
-      userType: 'store_manager',
     }
   },
   methods: {
@@ -102,12 +123,18 @@ export default {
       this.current.timeText = this.current.date + '' + this.current.time + '現在'
       return this.current.timeText
     },
+
     async SelectShop(value){
       await this.$nuxt.$loading.start()
-      .then(() =>{
-        this.$nuxt.$loading.finish()
-        })
+      console.log(value.storeId)
+      const res = await this.getGraphQL(value.storeId)
+      this.images = res.getLatestStoreImgs
+      this.liveText = res.getStoreOverview.live_msg
+      this.currentWeather = res.getStoreOverview.current_weather
+      this.forecasts = res.getStoreOverview.weather_forecasts
+      this.$nuxt.$loading.finish()
       },
+
     async getS3Data(shopId){
       const URL_AWS_IMAGE = `https://r67xjz1uyc.execute-api.ap-northeast-1.amazonaws.com/store/${shopId}/image`
       try{
@@ -177,6 +204,21 @@ export default {
             return disc;
       }
     },
+    async getGraphQL(storeid){
+      const url = "https://hintnedgcfhvrcgxefmogqwctu.appsync-api.ap-northeast-1.amazonaws.com/graphql"
+      const que = `{getStoreOverview(id: "${storeid}") {live_msg,current_weather{dt,temp,temp_max,temp_min,weather,icon},weather_forecasts{dt,temp,temp_max,temp_min,weather,icon}},getLatestStoreImgs(id: "${storeid}") {sensor_id,url}}`
+      const header = {
+        "Content-Type": "application/graphql",
+        "Authorization": this.$auth.strategy.token.session.idToken.jwtToken
+        }
+
+      const resp = await this.$axios.$post(url, {
+        query: que
+      }, {
+        headers: header
+      })
+      return resp.data
+    }
   }
 }
 </script>
