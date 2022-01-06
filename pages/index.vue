@@ -71,8 +71,8 @@ export default {
     // Weather
   },
   async asyncData(context){
-      const storeids = context.$auth.user.cognito.storeids
-      const usertype = context.$auth.user.cognito.usertype
+      const storeids = context.$auth.$storage.state.attribute.storeids
+      const usertype = context.$auth.$storage.state.attribute.usertype
       const storenames = ["店舗1","店舗2"]
       const url = "https://hintnedgcfhvrcgxefmogqwctu.appsync-api.ap-northeast-1.amazonaws.com/graphql"
       const stores = []
