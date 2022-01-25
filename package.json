@@ -21,7 +21,8 @@
     "eslint-plugin-prettier": "^3.4.1",
     "nuxi": "^0.10.0",
     "nuxt-edge": "latest",
-    "vuetify": "^2.5.5"
+    "vuetify": "^2.5.5",
+    "yarn": "^1.22.17"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.14.7",

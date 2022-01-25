@@ -126,13 +126,16 @@ export default {
 
     async SelectShop(value){
       await this.$nuxt.$loading.start()
-      console.log(value.storeId)
       const res = await this.getGraphQL(value.storeId)
-      this.images = res.getLatestStoreImgs
-      this.liveText = res.getStoreOverview.live_msg
-      this.currentWeather = res.getStoreOverview.current_weather
-      this.forecasts = res.getStoreOverview.weather_forecasts
-      this.$nuxt.$loading.finish()
+      if (res.getLatestStoreImgs === null || res.getStoreOverview === null){
+        this.$nuxt.$loading.finish()
+        alert("データが取得できません")
+      }else{
+        this.images = res.getLatestStoreImgs
+        this.liveText = res.getStoreOverview.live_msg
+        this.currentWeather = res.getStoreOverview.current_weather
+        this.forecasts = res.getStoreOverview.weather_forecasts
+        this.$nuxt.$loading.finish()}
       },
 
     async getS3Data(shopId){
