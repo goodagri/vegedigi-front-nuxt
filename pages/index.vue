@@ -71,8 +71,8 @@ export default {
     // Weather
   },
   async asyncData(context){
+
       const key = `CognitoIdentityServiceProvider.` + process.env.COGNITO_CLIENT_ID +'.'+ context.$auth.$state.user.cognito.username + '.userData'
-      // console.log(key)
       let storeids = []
       let usertype = ''
       if(context.$auth.$state[key] === undefined){
@@ -80,10 +80,9 @@ export default {
         usertype = context.$auth.$storage.state.attribute.usertype
       }else{
         const att = (JSON.parse(context.$auth.$state[key])).UserAttributes
-        storeids = att[2].Value.split(",")
-        usertype = att[3].Value
+        storeids = (att.find(a => a.Name === 'custom:store_ids')).Value.split(",")
+        usertype = att.find(a => a.Name === 'custom:user_type').Value
       }
-
       const storenames = ["店舗1","店舗2"]
       const url = "https://hintnedgcfhvrcgxefmogqwctu.appsync-api.ap-northeast-1.amazonaws.com/graphql"
       const stores = []

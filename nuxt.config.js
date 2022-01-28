@@ -3,7 +3,7 @@ import { defineNuxtConfig } from '@nuxt/bridge'
 import dotenv from 'dotenv'
 dotenv.config();
 // const { API_KEY } = process.env;
-const { API_KEY } = process.env;
+const { API_KEY,COGNITO_CLIENT_ID } = process.env;
 
 export default defineNuxtConfig({
   loading: './components/Loading.vue',
@@ -119,6 +119,7 @@ export default defineNuxtConfig({
   //   COGNITO_REGION
   // },
   env: {
-    API_KEY
+    API_KEY,
+    COGNITO_CLIENT_ID
   }
 })
