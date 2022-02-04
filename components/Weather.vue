@@ -69,6 +69,8 @@ export default {
   },
   mounted(){
     for(const forecast of this.forecasts) {
+      const d = new Date(forecast.dt * 1000)
+      if (d.getHours() >= 9 && d.getHours() <= 18){
       const Day = this.getDateTime(forecast.dt)
       const weatherIcon = this.getWeatherDescriptionToJapanese(forecast.weather)
       this.newForecasts.push({
@@ -76,7 +78,7 @@ export default {
           icon: weatherIcon.icon,
           temp: `${parseInt(forecast.temp)}\u2103`
         })
-      }
+      }}
 
     const day2 = this.getCurrentDate(this.currentWeather.dt)
     const weatherIcon2 = this.getWeatherDescriptionToJapanese(this.currentWeather.weather)
