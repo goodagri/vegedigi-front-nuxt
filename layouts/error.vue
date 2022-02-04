@@ -1,14 +1,25 @@
 <template>
   <v-app dark>
-    <h1 v-if="error.statusCode === 404">
-      {{ pageNotFound }}
-    </h1>
-    <h1 v-else>
-      {{ otherError }}
-    </h1>
-    <NuxtLink to="/">
-      Home page
-    </NuxtLink>
+    <v-container fluid>
+      <v-col cols="12">
+        <h1 v-if="error.statusCode === 404">
+          {{ pageNotFound }}
+        </h1>
+        <h1 v-else>
+          {{ otherError }}
+        </h1>
+        <div class="mt-5">
+        <p class="text--h5">エラーが発生しました</p>
+        <p>ログアウトしてやり直してください。</p>
+        <v-btn
+          color="error"
+          @click="logout()"
+        >
+          ログアウト
+        </v-btn>
+        </div>
+      </v-col>
+    </v-container>
   </v-app>
 </template>
 
@@ -32,6 +43,16 @@ export default {
       this.error.statusCode === 404 ? this.pageNotFound : this.otherError
     return {
       title
+    }
+  },
+  methods: {
+    logout() {
+      this.$auth.logout()
+      .then(() => {
+        this.$router.push('/login')
+      }).catch((err) => {
+        console.log('error', err)
+      })
     }
   }
 }
