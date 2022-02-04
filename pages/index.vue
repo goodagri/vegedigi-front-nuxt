@@ -71,35 +71,35 @@ export default {
     // Weather
   },
   async asyncData(context){
-
-      const key = `CognitoIdentityServiceProvider.` + process.env.COGNITO_CLIENT_ID +'.'+ context.$auth.$state.user.cognito.username + '.userData'
-      let storeids = []
-      let usertype = ''
-      if(context.$auth.$state[key] === undefined){
-        storeids = context.$auth.$storage.state.attribute.storeids
-        usertype = context.$auth.$storage.state.attribute.usertype
-      }else{
-        const att = (JSON.parse(context.$auth.$state[key])).UserAttributes
-        storeids = (att.find(a => a.Name === 'custom:store_ids')).Value.split(",")
-        usertype = att.find(a => a.Name === 'custom:user_type').Value
+    
+    const key = `CognitoIdentityServiceProvider.` + process.env.COGNITO_CLIENT_ID +'.'+ context.$auth.$state.user.cognito.username + '.userData'
+    let storeids = []
+    let usertype = ''
+    if(context.$auth.$state[key] === undefined){
+      storeids = context.$auth.$storage.state.attribute.storeids
+      usertype = context.$auth.$storage.state.attribute.usertype
+    }else{
+      const att = (JSON.parse(context.$auth.$state[key])).UserAttributes
+      storeids = (att.find(a => a.Name === 'custom:store_ids')).Value.split(",")
+      usertype = att.find(a => a.Name === 'custom:user_type').Value
+    }
+    const storenames = ["店舗1","店舗2"]
+    const url = "https://hintnedgcfhvrcgxefmogqwctu.appsync-api.ap-northeast-1.amazonaws.com/graphql"
+    const stores = []
+    for(let i = 0; i < storeids.length; i++ ){
+      stores.push({storeName:storenames[i],storeId:storeids[i]})
+    }
+    const que = `{getStoreOverview(id: "${stores[0].storeId}") {live_msg,current_weather{dt,temp,temp_max,temp_min,weather,icon},weather_forecasts{dt,temp,temp_max,temp_min,weather,icon}},getLatestStoreImgs(id: "${stores[0].storeId}") {sensor_id,url}}`
+    const header = {
+      "Content-Type": "application/graphql",
+      "Authorization": context.$auth.strategy.token.session.idToken.jwtToken
       }
-      const storenames = ["店舗1","店舗2"]
-      const url = "https://hintnedgcfhvrcgxefmogqwctu.appsync-api.ap-northeast-1.amazonaws.com/graphql"
-      const stores = []
-      for(let i = 0; i < storeids.length; i++ ){
-        stores.push({storeName:storenames[i],storeId:storeids[i]})
-      }
-      const que = `{getStoreOverview(id: "${stores[0].storeId}") {live_msg,current_weather{dt,temp,temp_max,temp_min,weather,icon},weather_forecasts{dt,temp,temp_max,temp_min,weather,icon}},getLatestStoreImgs(id: "${stores[0].storeId}") {sensor_id,url}}`
-      const header = {
-        "Content-Type": "application/graphql",
-        "Authorization": context.$auth.strategy.token.session.idToken.jwtToken
-        }
 
-      const resp = await context.$axios.$post(url, {
-        query: que
-      }, {
-        headers: header
-      })
+    const resp = await context.$axios.$post(url, {
+      query: que
+    }, {
+      headers: header
+    })
     
     return{
       storeName:storenames[0],
