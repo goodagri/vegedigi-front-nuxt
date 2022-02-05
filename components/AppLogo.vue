@@ -2,13 +2,13 @@
   <img
     class="AppLogo"
     alt="App Logo"
-    src="/AppLogo.png"
+    src="/DigivegeLogo.png"
   >
 </template>
 
 <style scoped>
 .AppLogo {
-  height: 80%;
-  width: 80%;
+  height: 100%;
+  width: 100%;
 }
 </style>
