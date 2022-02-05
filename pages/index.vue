@@ -1,5 +1,6 @@
 <template>
   <BasePage
+    v-if="userType"
     page-title="売り場状況"
     :user-type="userType"
     :breadcrumb-items="breadcrumbItems"
@@ -71,18 +72,21 @@ export default {
     // Weather
   },
   async asyncData(context){
-    
+
     const key = `CognitoIdentityServiceProvider.` + process.env.COGNITO_CLIENT_ID +'.'+ context.$auth.$state.user.cognito.username + '.userData'
     let storeids = []
     let usertype = ''
-    if(context.$auth.$state[key] === undefined){
+    if(context.$auth.$state[key] === undefined && context.$auth.$storage.state.attribute !== undefined){
       storeids = context.$auth.$storage.state.attribute.storeids
       usertype = context.$auth.$storage.state.attribute.usertype
-    }else{
+    }else if(context.$auth.$state[key] !== undefined){
       const att = (JSON.parse(context.$auth.$state[key])).UserAttributes
       storeids = (att.find(a => a.Name === 'custom:store_ids')).Value.split(",")
       usertype = att.find(a => a.Name === 'custom:user_type').Value
+    }else{
+      // アトリビュートが取得できなかったときの処理
     }
+    if(storeids.length > 0){
     const storenames = ["店舗1","店舗2"]
     const url = "https://hintnedgcfhvrcgxefmogqwctu.appsync-api.ap-northeast-1.amazonaws.com/graphql"
     const stores = []
@@ -110,12 +114,19 @@ export default {
       currentWeather: resp.data.getStoreOverview.current_weather,
       forecasts: resp.data.getStoreOverview.weather_forecasts
 
-    }
+    }}
   },
   data () {
     return {
       breadcrumbItems: [],
       storeName:'イオン利府1',
+    }
+  },
+  mounted () {
+    if(!this.userType){
+      this.$nuxt.error({
+        statusCode: 500
+      })
     }
   },
   methods: {
