@@ -8,8 +8,8 @@
   <template #sideMenu>
     <v-col cols="12">
       <v-sheet rounded="lg">
-        <v-row class="align-baseline">
-          <v-col>
+        <v-row class="d-flex justify-center">
+          <v-col cols="12" lg="7" md="7" sm="12" xs="12" >
             <v-select
               label="店舗選択"
               outlined
@@ -25,24 +25,46 @@
   </template>
   <template #main>
     <v-container fluid>
-      <v-row>
-        <v-col cols="12" class="mb-5">
+      <v-row class="d-flex justify-center">
+        <v-col cols="12" lg="7" md="7" sm="12" xs="12" class="mb-5">
           <h3>店舗名: </h3>
           <p class="text-subtitle-1 font-weight-bold">最新の売り場状況</p>
           <!-- <StoreImage /> -->
+
+                <v-carousel
+                  height="auto"
+                  width="auto"
+                  >
+                <v-carousel-item
+                  v-for="(item,i) in images"
+                  :key="i"
+                  :src="item.url"
+                  reverse-transition="fade-transition"
+                  transition="fade-transition"
+                >
+                <v-img :src="i.url"/>
+                </v-carousel-item>
+              </v-carousel>
+          <!-- <v-row>
+            <v-col
+            :key="image"
+            :v-for="image in images"
+            >
           <v-img
             max-height="500"
             contain
-            :src="images[0].url"
+            :src="image.url"
           />
+            </v-col>
+          </v-row> -->
         </v-col>
-        <v-col cols="12" class="mb-5">
+        <v-col cols="7" class="mb-5">
           <p class="text-subtitle-1 font-weight-bold">野菜の量</p>
           <v-card>
             <v-card-text>{{ liveText }}</v-card-text>
           </v-card>
         </v-col>
-        <v-col  cols="12" class="mb-5">
+        <v-col  cols="7" class="mb-5">
           <p class="text-subtitle-1 font-weight-bold">天気情報</p>
             <Weather
               :forecasts="forecasts"
@@ -104,7 +126,7 @@ export default {
     }, {
       headers: header
     })
-    
+    console.log(resp.data.getLatestStoreImgs)
     return{
       storeName:storenames[0],
       userType: usertype,
